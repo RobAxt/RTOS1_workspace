@@ -316,7 +316,7 @@ void Task2_App(void const * argument)
   {
     HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
     printf("Hello World from Task2\r\n");
-    osDelay(1);
+    osDelay(1000);
   }
   /* USER CODE END Task2_App */
 }
