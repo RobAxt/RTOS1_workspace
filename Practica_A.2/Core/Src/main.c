@@ -64,21 +64,7 @@ void Task2_App(void const * argument);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 extern void initialise_monitor_handles(void);
-int __io_putchar(int ch)
-{
-  HAL_UART_Transmit(&huart3, (uint8_t*)&ch, 1, 0xFFFF);
-  return ch;
-}
 
-int _write(int file, char *ptr, int len)
-{
-  int DataIdx;
-  for(DataIdx = 0; DataIdx < len; DataIdx++)
-  {
-    __io_putchar(*ptr++);
-  }
-  return len;
-}
 /* USER CODE END 0 */
 
 /**
@@ -309,6 +295,7 @@ void Task1_App(void const * argument)
   for(;;)
   {
     HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
+    printf("Hello World from Task1\r\n");
     osSemaphoreWait(Binary_SemHandle, osWaitForever);
   }
   /* USER CODE END 5 */
@@ -328,6 +315,7 @@ void Task2_App(void const * argument)
   for(;;)
   {
     HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
+    printf("Hello World from Task2\r\n");
     osDelay(1);
   }
   /* USER CODE END Task2_App */
