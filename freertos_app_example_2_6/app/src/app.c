@@ -52,7 +52,7 @@
 /********************** macros and definitions *******************************/
 
 /********************** internal data declaration ****************************/
-
+typedef enum {task_a_data=0, task_b_data, task_c_data } task_data_t;
 /********************** internal functions declaration ***********************/
 
 /********************** internal data definition *****************************/
@@ -90,39 +90,36 @@ void app_init(void)
     /* Add queue or semaphore (binary or counting) or mutex to registry. */
 
 	/* Add threads, ... */
-	uint32_t index;
+
     BaseType_t ret;
 
-	index = 0;
     /* Task A thread at priority 1 */
     ret = xTaskCreate(task_function,					/* Pointer to the function thats implement the task. */
 					  "Task A",							/* Text name for the task. This is to facilitate debugging only. */
 					  (2 * configMINIMAL_STACK_SIZE),	/* Stack depth in words. */
-					  (void *)index,    				/* Pass the index as the task parameter. */
+					  (void *)&led_btn_cfg[task_a_data],/* Pass the index as the task parameter. */
 					  (tskIDLE_PRIORITY + 1ul),			/* This task will run at priority 1. */
 					  &h_task_a);						/* We are using a variable as task handle. */
 
     /* Check the thread was created successfully. */
     configASSERT(pdPASS == ret);
 
-	index = 1;
     /* Task B thread at priority 1 */
     ret = xTaskCreate(task_function,					/* Pointer to the function thats implement the task. */
 					  "Task B",							/* Text name for the task. This is to facilitate debugging only. */
 					  (2 * configMINIMAL_STACK_SIZE),	/* Stack depth in words. */
-					  (void *)index,   					/* Pass the index as the task parameter. */
+					  (void *)&led_btn_cfg[task_b_data],/* Pass the index as the task parameter. */
 					  (tskIDLE_PRIORITY + 1ul),			/* This task will run at priority 1. */
 					  &h_task_b);						/* We are using a variable as task handle. */
 
     /* Check the thread was created successfully. */
     configASSERT(pdPASS == ret);
 
-	index = 2;
     /* Task C thread at priority 1 */
     ret = xTaskCreate(task_function,					/* Pointer to the function thats implement the task. */
 					  "Task C",							/* Text name for the task. This is to facilitate debugging only. */
 					  (2 * configMINIMAL_STACK_SIZE),	/* Stack depth in words. */
-					  (void *)index,   					/* Pass the index as the task parameter. */
+					  (void *)&led_btn_cfg[task_c_data],/* Pass the index as the task parameter. */
 					  (tskIDLE_PRIORITY + 1ul),			/* This task will run at priority 1. */
 					  &h_task_c);						/* We are using a variable as task handle. */
 

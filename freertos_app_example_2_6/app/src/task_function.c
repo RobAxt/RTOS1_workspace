@@ -68,13 +68,11 @@ const char *p_task_blinking_off	= "Blinking turn Off";
 const char *p_task_led_t_on		= "LDX turn On ";
 const char *p_task_led_t_off	= "LDX turn Off";
 
-uint16_t	  	led_pin[]		= {LED_A_PIN,	LED_B_PIN,	LED_C_PIN};
-GPIO_TypeDef *	led_gpio_port[]	= {LED_A_PORT,	LED_B_PORT,	LED_C_PORT};
-
-uint16_t		btn_pin[]		= {BTN_A_PIN,	BTN_B_PIN,	BTN_C_PIN };
-GPIO_TypeDef *	btn_gpio_port[]	= {BTN_A_PORT,	BTN_B_PORT,	BTN_C_PORT};
-
-led_btn_cfg_t led_btn_cfg[] = {};
+led_btn_cfg_t led_btn_cfg[] = {
+                                {LED_A_PORT, LED_A_PIN, 0, 0, 0, BTN_A_PORT, BTN_A_PIN, 0, 0, 0 },
+                                {LED_B_PORT, LED_B_PIN, 0, 0, 0, BTN_B_PORT, BTN_B_PIN, 0, 0, 0 },
+                                {LED_C_PORT, LED_C_PIN, 0, 0, 0, BTN_C_PORT, BTN_C_PIN, 0, 0, 0 }
+                              };
 
 /********************** external data declaration ****************************/
 uint32_t g_task_function_cnt;
@@ -87,14 +85,14 @@ void task_function(void *parameters)
 	g_task_function_cnt = G_TASK_FUNCTION_CNT_INI;
 
 	/*  Declare & Initialize Task Function variables for argument, led, button and task */
-	uint32_t index = (uint32_t) parameters;
+	led_btn_cfg_t *data = (led_btn_cfg_t*) parameters;
 
-	led_flag_t led_flag = NOT_BLINKING;
-	GPIO_PinState led_state = GPIO_PIN_RESET;
-	TickType_t led_tick_cnt = xTaskGetTickCount();
+	data->led_flag = NOT_BLINKING;
+	data->led_state = GPIO_PIN_RESET;
+	data->led_tick_cnt = xTaskGetTickCount();
 
-	TickType_t btn_tick_cnt = xTaskGetTickCount();
-	GPIO_PinState btn_state = BTN_HOVER;
+	data->btn_tick_cnt = xTaskGetTickCount();
+	data->btn_state = BTN_HOVER;
 
 	char *p_task_name = (char *)pcTaskGetName(NULL);
 
@@ -125,58 +123,58 @@ void task_function(void *parameters)
 		g_task_function_cnt++;
 
 		/* Check HW Button State */
-		btn_state = HAL_GPIO_ReadPin(btn_gpio_port[index], btn_pin[index]);
-		if (BTN_PRESSED == btn_state)
+		data->btn_state = HAL_GPIO_ReadPin(data->btn_gpio_port, data->btn_pin);
+		if (BTN_PRESSED == data->btn_state)
 		{
 			/* Delay for a period using Tick Count */
-			if (BTN_TICK_CNT_MAX <= (xTaskGetTickCount() - btn_tick_cnt))
+			if (BTN_TICK_CNT_MAX <= (xTaskGetTickCount() - data->btn_tick_cnt))
 			{
 				/* Check, Update and Print Led Flag */
-				if (NOT_BLINKING == led_flag)
+				if (NOT_BLINKING == data->led_flag)
 				{
-					led_flag = BLINKING;
+					data->led_flag = BLINKING;
 
 					/* Print out: Task execution */
 					LOGGER_LOG("  %s - %s\r\n", p_task_name, p_task_blinking_on);
 				}
 				else
 				{
-					led_flag = NOT_BLINKING;
+					data->led_flag = NOT_BLINKING;
 
 					/* Print out: Task execution */
 					LOGGER_LOG("  %s - %s\r\n", p_task_name, p_task_blinking_off);
 				}
 				/* Update and Button Tick Counter */
-				btn_tick_cnt = xTaskGetTickCount();
+				data->btn_tick_cnt = xTaskGetTickCount();
 			}
 		}
 
 		/* Check Led Flag */
-		if (BLINKING == led_flag)
+		if (BLINKING == data->led_flag)
 		{
 			/* Delay for a period using Tick Count. */
-			if (LED_TICK_CNT_MAX <= (xTaskGetTickCount() - led_tick_cnt))
+			if (LED_TICK_CNT_MAX <= (xTaskGetTickCount() - data->led_tick_cnt))
 			{
 				/* Check, Update and Print Led State */
-				if (GPIO_PIN_RESET == led_state)
+				if (GPIO_PIN_RESET == data->led_state)
 				{
-					led_state = LED_ON;
+					data->led_state = LED_ON;
 
 					/* Print out: Task execution */
 					//LOGGER_LOG("  %s - %s\r\n", p_task_name, p_task_led_t_on);
 				}
 				else
 				{
-					led_state = LED_OFF;
+					data->led_state = LED_OFF;
 
 					/* Print out: Task execution */
 					//LOGGER_LOG("  %s - %s\r\n", p_task_name, p_task_led_t_off);
 				}
 				/* Update HW Led State */
-				HAL_GPIO_WritePin(led_gpio_port[index], led_pin[index], led_state);
+				HAL_GPIO_WritePin(data->led_gpio_port, data->led_pin, data->led_state);
 
 				/* Update and Led Tick Counter */
-				led_tick_cnt = xTaskGetTickCount();
+				data->led_tick_cnt = xTaskGetTickCount();
 			}
 		}
 
