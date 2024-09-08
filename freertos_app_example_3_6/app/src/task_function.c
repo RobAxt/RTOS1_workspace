@@ -70,9 +70,9 @@ const char *p_task_ldx_t_on		= "LDX turn On ";
 const char *p_task_ldx_t_off	= "LDX turn Off";
 
 ldx_btn_config_t ldx_btn_config[]	= {
-                                       {LED_A_PORT, LED_A_PIN, LED_OFF, NOT_BLINKING, BTN_A_PORT, BTN_A_PIN, BTN_HOVER, NOT_PRESSED},
-                                       {LED_B_PORT, LED_B_PIN, LED_OFF, NOT_BLINKING, BTN_B_PORT, BTN_B_PIN, BTN_HOVER, NOT_PRESSED},
-                                       {LED_C_PORT, LED_C_PIN, LED_OFF, NOT_BLINKING, BTN_C_PORT, BTN_C_PIN, BTN_HOVER, NOT_PRESSED}
+                                       {LED_A_PORT, LED_A_PIN, LED_OFF, NOT_BLINKING, BTN_A_PORT, BTN_A_PIN, BTN_HOVER },
+                                       {LED_B_PORT, LED_B_PIN, LED_OFF, NOT_BLINKING, BTN_B_PORT, BTN_B_PIN, BTN_HOVER },
+                                       {LED_C_PORT, LED_C_PIN, LED_OFF, NOT_BLINKING, BTN_C_PORT, BTN_C_PIN, BTN_HOVER }
                                        };
 
 /********************** external data declaration *****************************/
