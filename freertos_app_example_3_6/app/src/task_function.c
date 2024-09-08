@@ -52,7 +52,7 @@
 /********************** macros and definitions *******************************/
 #define G_TASK_FUNCTION_CNT_INI	0ul
 
-#define BTN_TICK_CNT_MAX		250ul
+#define BTN_TICK_CNT_MAX		100ul
 #define LED_TICK_CNT_MAX		250ul
 
 /********************** internal data declaration ****************************/
@@ -60,7 +60,8 @@
 /********************** internal functions declaration ***********************/
 
 /********************** internal data definition *****************************/
-const char *p_task_function 	= "Task FUNCTION - Demo Code";
+const char *p_task_button 	= "Task BUTTON - Demo Code";
+const char *p_task_led      = "Task LED - Demo Code";
 
 const char *p_task_blinking_on	= "Blinking turn On ";
 const char *p_task_blinking_off	= "Blinking turn Off";
@@ -68,133 +69,92 @@ const char *p_task_blinking_off	= "Blinking turn Off";
 const char *p_task_ldx_t_on		= "LDX turn On ";
 const char *p_task_ldx_t_off	= "LDX turn Off";
 
-ldx_btn_config_t ldx_btn_config[]	= {{LED_A_PORT, LED_A_PIN, 			\
-										LED_OFF,	NOT_BLINKING,	0,	\
-										BTN_A_PORT,	BTN_A_PIN,			\
-										BTN_HOVER,	NOT_PRESSED,	0},
-							  	   	   {LED_B_PORT, LED_B_PIN, 			\
-							  	   		LED_OFF,	NOT_BLINKING,	0,	\
-										BTN_B_PORT,	BTN_B_PIN, 			\
-										BTN_HOVER,	NOT_PRESSED,	0},
-									   {LED_C_PORT, LED_C_PIN, 			\
-										LED_OFF,	NOT_BLINKING, 	0,	\
-										BTN_C_PORT,	BTN_C_PIN,			\
-										BTN_HOVER,	NOT_PRESSED, 	0}};
+ldx_btn_config_t ldx_btn_config[]	= {
+                                       {LED_A_PORT, LED_A_PIN, LED_OFF, NOT_BLINKING, BTN_A_PORT, BTN_A_PIN, BTN_HOVER, NOT_PRESSED},
+                                       {LED_B_PORT, LED_B_PIN, LED_OFF, NOT_BLINKING, BTN_B_PORT, BTN_B_PIN, BTN_HOVER, NOT_PRESSED},
+                                       {LED_C_PORT, LED_C_PIN, LED_OFF, NOT_BLINKING, BTN_C_PORT, BTN_C_PIN, BTN_HOVER, NOT_PRESSED}
+                                       };
 
 /********************** external data declaration *****************************/
 uint32_t g_task_function_cnt;
 
 /********************** external functions definition ************************/
-/* Task A, B and C thread */
-void task_function(void *parameters)
+void task_btn(void *parameters)
 {
-	#if (TEST_X == TEST_0)
-	g_task_function_cnt = G_TASK_FUNCTION_CNT_INI;
+	const TickType_t xDelay100ms = pdMS_TO_TICKS( BTN_TICK_CNT_MAX );
 
-	/*  Declare & Initialize Task Function variables for argument, led, button and task */
 	ldx_btn_config_t *p_ldx_btn_config = (ldx_btn_config_t *)parameters;
-
-	p_ldx_btn_config->led_tick_cnt = xTaskGetTickCount();
-	p_ldx_btn_config->btn_tick_cnt = xTaskGetTickCount();
 
 	char *p_task_name = (char *)pcTaskGetName(NULL);
 
 	/* Print out: Application Update */
-	LOGGER_LOG("  %s is running - %s\r\n", p_task_name, p_task_function);
+	LOGGER_LOG("  %s is running - %s\r\n", p_task_name, p_task_button);
 
-	#endif
-
-	#if (TEST_X == TEST_1)
-
-	/* Here another code option */
-
-	#endif
-
-	#if (TEST_X == TEST_2)
-
-	/* Here Chatbot Artificial Intelligence generated code */
-
-	#endif
-
-	/* As per most tasks, this task is implemented in an infinite loop. */
 	for (;;)
 	{
-
-		#if (TEST_X == TEST_0)
-
-		/* Update Task A Counter */
-		g_task_function_cnt++;
-
-		/* Check HW Button State */
 		p_ldx_btn_config->btn_state = HAL_GPIO_ReadPin(p_ldx_btn_config->btn_gpio_port, p_ldx_btn_config->btn_pin);
 		if (BTN_PRESSED == p_ldx_btn_config->btn_state)
 		{
-			/* Delay for a period using Tick Count */
-			if (BTN_TICK_CNT_MAX <= (xTaskGetTickCount() - p_ldx_btn_config->btn_tick_cnt))
+			/* Check, Update and Print Led Flag */
+			if (NOT_BLINKING == (p_ldx_btn_config->led_flag))
 			{
-				/* Check, Update and Print Led Flag */
-				if (NOT_BLINKING == (p_ldx_btn_config->led_flag))
-				{
-					p_ldx_btn_config->led_flag = BLINKING;
+				p_ldx_btn_config->led_flag = BLINKING;
 
-					/* Print out: Task execution */
-					LOGGER_LOG("  %s - %s\r\n", p_task_name, p_task_blinking_on);
-				}
-				else
-				{
-					p_ldx_btn_config->led_flag = NOT_BLINKING;
+				/* Print out: Task execution */
+				LOGGER_LOG("  %s - %s\r\n", p_task_name, p_task_blinking_on);
+			}
+			else
+			{
+				p_ldx_btn_config->led_flag = NOT_BLINKING;
 
-					/* Print out: Task execution */
-					LOGGER_LOG("  %s - %s\r\n", p_task_name, p_task_blinking_off);
-				}
-				/* Update and Button Tick Counter */
-				p_ldx_btn_config->btn_tick_cnt = xTaskGetTickCount();
+				/* Print out: Task execution */
+				LOGGER_LOG("  %s - %s\r\n", p_task_name, p_task_blinking_off);
 			}
 		}
+		// Bloquea la tarea durante 100mS, liberando el uso del CPU
+		vTaskDelay(xDelay100ms);
+	}
+}
 
+void task_led(void *parameters)
+{
+	const TickType_t xDelay250ms = pdMS_TO_TICKS( LED_TICK_CNT_MAX );
+	TickType_t xLastWakeTime = xTaskGetTickCount();
+
+	ldx_btn_config_t *p_ldx_btn_config = (ldx_btn_config_t *)parameters;
+
+	char *p_task_name = (char *)pcTaskGetName(NULL);
+
+	/* Print out: Application Update */
+	LOGGER_LOG("  %s is running - %s\r\n", p_task_name, p_task_led);
+	for (;;)
+	{
 		/* Check Led Flag */
 		if (BLINKING == (p_ldx_btn_config->led_flag))
 		{
-			/* Delay for a period using Tick Count. */
-			if (LED_TICK_CNT_MAX <= (xTaskGetTickCount() - (p_ldx_btn_config->led_tick_cnt)))
+			/* Check, Update and Print Led State */
+			if (GPIO_PIN_RESET == (p_ldx_btn_config->led_state))
 			{
-				/* Check, Update and Print Led State */
-				if (GPIO_PIN_RESET == (p_ldx_btn_config->led_state))
-				{
-					p_ldx_btn_config->led_state = GPIO_PIN_SET;
+				p_ldx_btn_config->led_state = GPIO_PIN_SET;
 
-					/* Print out: Task execution */
-					//LOGGER_LOG("  %s - %s\r\n", p_task_name, p_task_ldx_t_on);
-				}
-				else
-				{
-					p_ldx_btn_config->led_state = GPIO_PIN_RESET;
-
-					/* Print out: Task execution */
-					//LOGGER_LOG("  %s - %s\r\n", p_task_name, p_task_ldx_t_off);
-				}
-				/* Update HW Led State */
-		    	HAL_GPIO_WritePin(p_ldx_btn_config->led_gpio_port, p_ldx_btn_config->led_pin, p_ldx_btn_config->led_state);
-
-				/* Update and Led Tick Counter */
-		    	p_ldx_btn_config->led_tick_cnt = xTaskGetTickCount();
+				/* Print out: Task execution */
+				//LOGGER_LOG("  %s - %s\r\n", p_task_name, p_task_ldx_t_on);
 			}
+			else
+			{
+				p_ldx_btn_config->led_state = GPIO_PIN_RESET;
+
+				/* Print out: Task execution */
+				//LOGGER_LOG("  %s - %s\r\n", p_task_name, p_task_ldx_t_off);
+			}
+			/* Update HW Led State */
+	    	HAL_GPIO_WritePin(p_ldx_btn_config->led_gpio_port, p_ldx_btn_config->led_pin, p_ldx_btn_config->led_state);
+
 		}
-
-		#endif
-
-		#if (TEST_X == TEST_1)
-
-		/* Here another code option */
-
-		#endif
-
-		#if (TEST_X == TEST_2)
-
-		/* Here Chatbot Artificial Intelligence generated code */
-
-		#endif
+    	/* CODIGO DE PROCESO PERIODICO QUE TARDA EN EJECUTARSE */
+    	vTaskDelayUntil( &xLastWakeTime, xDelay250ms );
 	}
 }
+
 
 /********************** end of file ******************************************/

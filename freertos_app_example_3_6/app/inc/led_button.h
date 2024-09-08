@@ -57,13 +57,11 @@ typedef struct
 	uint16_t		led_pin;
 	GPIO_PinState	led_state;
 	led_flag_t		led_flag;
-	TickType_t 		led_tick_cnt;
 
 	GPIO_TypeDef *	btn_gpio_port;
 	uint16_t		btn_pin;
 	GPIO_PinState	btn_state;
 	btn_flag_t		btn_flag;
-	TickType_t 		btn_tick_cnt;
 } ldx_btn_config_t;
 
 extern ldx_btn_config_t ldx_btn_config[];
