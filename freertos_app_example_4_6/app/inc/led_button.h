@@ -57,15 +57,18 @@ typedef struct
 	uint16_t		led_pin;
 	GPIO_PinState	led_state;
 	led_flag_t		led_flag;
+	uint8_t         led_peak;
+} led_config_t;
 
+typedef struct
+{
 	GPIO_TypeDef *	btn_gpio_port;
 	uint16_t		btn_pin;
 	GPIO_PinState	btn_state;
-	btn_flag_t		btn_flag;
-} led_btn_config_t;
+} btn_config_t;
 
-extern led_btn_config_t led_btn_config[];
-
+extern led_config_t led_config[];
+extern btn_config_t btn_config[];
 /********************** external data declaration ****************************/
 
 /********************** external functions declaration ***********************/
