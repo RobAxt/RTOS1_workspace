@@ -72,9 +72,11 @@ const char *p_task_led_t_off	= "LDX turn Off";
 
 const uint8_t LED_TASKS_COUNT = 3;
 
-led_config_t led_config[] = {{LED_A_PORT, LED_A_PIN, LED_OFF, NOT_BLINKING, 0},
-                             {LED_B_PORT, LED_B_PIN, LED_OFF, NOT_BLINKING, 0},
-                             {LED_C_PORT, LED_C_PIN, LED_OFF, NOT_BLINKING, 0}};
+uint8_t led_peak = LED_TASKS_COUNT - 1;
+
+led_config_t led_config[] = { {LED_A_PORT, LED_A_PIN, LED_OFF, NOT_BLINKING, &led_peak},
+                              {LED_B_PORT, LED_B_PIN, LED_OFF, NOT_BLINKING, &led_peak},
+                              {LED_C_PORT, LED_C_PIN, LED_OFF, NOT_BLINKING, &led_peak} };
 btn_config_t btn_config[] = {{BTN_A_PORT, BTN_A_PIN, BTN_HOVER}};
 
 
@@ -94,7 +96,6 @@ void task_led(void *parameters)
 	led_flag_t led_flag = NOT_BLINKING;
 	TickType_t last_wake_time;
 
-	BaseType_t xStatus;
 
 	/* The xLastWakeTime variable needs to be initialized with the current tick
 	   count. ws*/
@@ -150,25 +151,25 @@ void task_led(void *parameters)
 			/* Update HW Led State */
 		    HAL_GPIO_WritePin(p_led_config->led_gpio_port, p_led_config->led_pin, p_led_config->led_state);
 		}
-		/* Retrieve from Queue the led_flag value. Peak and the last task Receive. */
-		switch(p_led_config->led_peak)
-		{
-		case 2:
-		case 1:
-			xStatus = xQueuePeek(h_queue, (void*)&led_flag, 0);
-			break;
-		case 0:
-			xStatus = xQueueReceive(h_queue, (void*)&led_flag, 0);
-			p_led_config->led_peak = LED_TASKS_COUNT;
-			break;
-		default:
-			p_led_config->led_peak = LED_TASKS_COUNT;
-		}
-		p_led_config->led_peak--;
 
-		if( xStatus != pdPASS )
+		if(uxQueueMessagesWaiting(h_queue) != 0)
 		{
-			//LOGGER_LOG("Could not peak or receive to the queue.\r\n");
+			/* Retrieve from Queue the led_flag value. Peak and the last task Receive. */
+			switch(*(p_led_config->led_peak))
+			{
+			case 2:
+			case 1:
+				 xQueuePeek(h_queue, (void*)&led_flag, 0);
+				break;
+			case 0:
+				 xQueueReceive(h_queue, (void*)&led_flag, 0);
+				 *(p_led_config->led_peak) = LED_TASKS_COUNT;
+				break;
+			default:
+				*(p_led_config->led_peak) = LED_TASKS_COUNT;
+			}
+			(*(p_led_config->led_peak))--;
+
 		}
 
 		/* We want this task to execute exactly every 250 milliseconds. */

@@ -57,7 +57,7 @@ typedef struct
 	uint16_t		led_pin;
 	GPIO_PinState	led_state;
 	led_flag_t		led_flag;
-	uint8_t         led_peak;
+	uint8_t *       led_peak;
 } led_config_t;
 
 typedef struct
