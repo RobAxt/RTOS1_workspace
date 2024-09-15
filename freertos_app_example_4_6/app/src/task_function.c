@@ -154,6 +154,7 @@ void task_led(void *parameters)
 
 		if(uxQueueMessagesWaiting(h_queue) != 0)
 		{
+			/* ###################### CRITICAL SECTION ############################### */
 			/* Retrieve from Queue the led_flag value. Peak and the last task Receive. */
 			switch(*(p_led_config->led_peak))
 			{
@@ -169,6 +170,7 @@ void task_led(void *parameters)
 				*(p_led_config->led_peak) = LED_TASKS_COUNT;
 			}
 			(*(p_led_config->led_peak))--;
+			/* ###################### CRITICAL SECTION ############################### */
 
 		}
 
