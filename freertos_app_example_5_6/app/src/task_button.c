@@ -65,9 +65,9 @@ const char *p_task_button		= "Task BUTTON - Demo Code";
 const char *p_task_blinking_on	= "Blinking turn On ";
 const char *p_task_blinking_off	= "Blinking turn Off";
 
-btn_config_t btn_config[]	= {{BTN_A_PORT,	BTN_A_PIN, BTN_HOVER, NOT_PRESSED, NULL},
-					  	   	   {BTN_B_PORT,	BTN_B_PIN, BTN_HOVER, NOT_PRESSED, NULL},
-							   {BTN_C_PORT,	BTN_C_PIN, BTN_HOVER, NOT_PRESSED, NULL}
+btn_config_t btn_config[]	= {{BTN_A_PORT,	BTN_A_PIN, BTN_HOVER, NULL},
+					  	   	   {BTN_B_PORT,	BTN_B_PIN, BTN_HOVER, NULL},
+							   {BTN_C_PORT,	BTN_C_PIN, BTN_HOVER, NULL}
                                };
 
 /********************** external data declaration *****************************/
@@ -84,8 +84,8 @@ void task_button(void *parameters)
 	/*  Declare & Initialize Task Function variables for argument, led, button and task */
 	btn_config_t *p_btn_config = (btn_config_t *)parameters;
 
-	led_flag_t led_flag = NOT_BLINKING;
-	LOGGER_LOG("  Address of led_flag - 0x%X\r\n", &led_flag);
+	static led_flag_t led_flag = NOT_BLINKING;
+	LOGGER_LOG("  Address of led_flag - 0x%08lx\r\n", (uint32_t) &led_flag);
 
 	char *p_task_name = (char *)pcTaskGetName(NULL);
 

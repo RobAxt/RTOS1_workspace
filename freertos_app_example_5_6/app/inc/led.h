@@ -55,7 +55,6 @@ typedef struct
 	GPIO_TypeDef *		led_gpio_port;
 	uint16_t			led_pin;
 	GPIO_PinState		led_state;
-	led_flag_t			led_flag;
 	SemaphoreHandle_t	semaphore_handle;
 } led_config_t;
 

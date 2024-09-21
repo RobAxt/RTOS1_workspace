@@ -64,9 +64,9 @@ const char *p_task_led = "Task LED - Demo Code";
 const char *p_task_led_t_on = "LDX turn On ";
 const char *p_task_led_t_off = "LDX turn Off";
 
-led_config_t led_config[] = { { LED_A_PORT, LED_A_PIN, LED_OFF, NOT_BLINKING, NULL },
-		                      { LED_B_PORT, LED_B_PIN, LED_OFF, NOT_BLINKING, NULL },
-							  { LED_C_PORT, LED_C_PIN, LED_OFF, NOT_BLINKING, NULL }
+led_config_t led_config[] = { { LED_A_PORT, LED_A_PIN, LED_OFF, NULL },
+		                      { LED_B_PORT, LED_B_PIN, LED_OFF, NULL },
+							  { LED_C_PORT, LED_C_PIN, LED_OFF, NULL }
                             };
 
 /********************** external data declaration *****************************/
