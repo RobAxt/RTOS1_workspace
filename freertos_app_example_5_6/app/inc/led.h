@@ -52,11 +52,11 @@ typedef enum {BLINKING, NOT_BLINKING} led_flag_t;
 
 typedef struct
 {
-	GPIO_TypeDef *	led_gpio_port;
-	uint16_t		led_pin;
-	GPIO_PinState	led_state;
-	led_flag_t		led_flag;
-	QueueHandle_t	queue_handle;
+	GPIO_TypeDef *		led_gpio_port;
+	uint16_t			led_pin;
+	GPIO_PinState		led_state;
+	led_flag_t			led_flag;
+	SemaphoreHandle_t	semaphore_handle;
 } led_config_t;
 
 extern led_config_t led_config[];

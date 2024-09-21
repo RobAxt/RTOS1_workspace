@@ -64,13 +64,13 @@ const char *p_app	= " freertos_app_example_5_6: Demo Code\r\n";
 /********************** external data declaration *****************************/
 /* Declare a variable of type QueueHandle_t. This is used to reference queues*/
 /* This is used to send messages from the Button task to the Led task. */
-QueueHandle_t h_a_q;
-QueueHandle_t h_b_q;
-QueueHandle_t h_c_q;
 
 /* Declare a variable of type xSemaphoreHandle (binary or counting) or mutex. 
  * This is used to reference the semaphore that is used to synchronize a thread
  * with other thread or to ensure mutual exclusive access to...*/
+SemaphoreHandle_t h_a_s;
+SemaphoreHandle_t h_b_s;
+SemaphoreHandle_t h_c_s;
 
 /* Declare a variable of type TaskHandle_t. This is used to reference threads. */
 TaskHandle_t h_task_a;
@@ -93,20 +93,20 @@ void app_init(void)
     /* Before a queue or semaphore (binary or counting) or mutex is used it must 
      * be explicitly created */
     /* The queue is created to hold a maximum of 5 long values. */
-	h_a_q = xQueueCreate(5, sizeof(led_flag_t));
-	h_b_q = xQueueCreate(5, sizeof(led_flag_t));
-	h_c_q = xQueueCreate(5, sizeof(led_flag_t));
+	h_a_s = xSemaphoreCreateBinary();
+	h_b_s = xSemaphoreCreateBinary();
+	h_c_s = xSemaphoreCreateBinary();
 
     /* Check the queue or semaphore (binary or counting) or mutex was created 
      * successfully. */
-	configASSERT(NULL != h_a_q);
-	configASSERT(NULL != h_b_q);
-	configASSERT(NULL != h_c_q);
+	configASSERT(NULL != h_a_s);
+	configASSERT(NULL != h_b_s);
+	configASSERT(NULL != h_c_s);
 
     /* Add queue or semaphore (binary or counting) or mutex to registry. */
-	vQueueAddToRegistry(h_a_q, "A Queue Handle");
-	vQueueAddToRegistry(h_b_q, "B Queue Handle");
-	vQueueAddToRegistry(h_c_q, "C Queue Handle");
+	vQueueAddToRegistry(h_a_s, "A Semaphore Handle");
+	vQueueAddToRegistry(h_b_s, "B Semaphore Handle");
+	vQueueAddToRegistry(h_c_s, "C Semaphore Handle");
 
 	/* Add threads, ... */
 	led_config_t *p_led_config;
@@ -115,8 +115,8 @@ void app_init(void)
 
     p_led_config = &led_config[0];
     p_btn_config = &btn_config[0];
-	p_led_config->queue_handle = h_a_q;
-	p_btn_config->queue_handle = h_a_q;
+	p_led_config->semaphore_handle = h_a_s;
+	p_btn_config->semaphore_handle = h_a_s;
     /* Task A thread at priority 1 */
     ret = xTaskCreate(task_led,							/* Pointer to the function thats implement the task. */
 					  "Task A",							/* Text name for the task. This is to facilitate debugging only. */
@@ -141,8 +141,8 @@ void app_init(void)
 
     p_led_config = &led_config[1];
     p_btn_config = &btn_config[1];
-	p_led_config->queue_handle = h_b_q;
-	p_btn_config->queue_handle = h_b_q;
+	p_led_config->semaphore_handle = h_b_s;
+	p_btn_config->semaphore_handle = h_b_s;
     /* Task B thread at priority 1 */
     ret = xTaskCreate(task_led,							/* Pointer to the function thats implement the task. */
 					  "Task B",							/* Text name for the task. This is to facilitate debugging only. */
@@ -167,8 +167,8 @@ void app_init(void)
 
     p_led_config = &led_config[2];
     p_btn_config = &btn_config[2];
-	p_led_config->queue_handle = h_c_q;
-	p_btn_config->queue_handle = h_c_q;
+	p_led_config->semaphore_handle = h_c_s;
+	p_btn_config->semaphore_handle = h_c_s;
     /* Task C thread at priority 1 */
     ret = xTaskCreate(task_led,							/* Pointer to the function thats implement the task. */
 					  "Task C",							/* Text name for the task. This is to facilitate debugging only. */

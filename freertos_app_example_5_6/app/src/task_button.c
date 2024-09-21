@@ -65,15 +65,10 @@ const char *p_task_button		= "Task BUTTON - Demo Code";
 const char *p_task_blinking_on	= "Blinking turn On ";
 const char *p_task_blinking_off	= "Blinking turn Off";
 
-btn_config_t btn_config[]	= {{BTN_A_PORT,	BTN_A_PIN,		\
-								BTN_HOVER,	NOT_PRESSED,	\
-								NULL},
-					  	   	   {BTN_B_PORT,	BTN_B_PIN, 		\
-								BTN_HOVER,	NOT_PRESSED,	\
-								NULL},
-							   {BTN_C_PORT,	BTN_C_PIN,		\
-								BTN_HOVER,	NOT_PRESSED,	\
-								NULL}};
+btn_config_t btn_config[]	= {{BTN_A_PORT,	BTN_A_PIN, BTN_HOVER, NOT_PRESSED, NULL},
+					  	   	   {BTN_B_PORT,	BTN_B_PIN, BTN_HOVER, NOT_PRESSED, NULL},
+							   {BTN_C_PORT,	BTN_C_PIN, BTN_HOVER, NOT_PRESSED, NULL}
+                               };
 
 /********************** external data declaration *****************************/
 uint32_t g_task_btn_cnt;
@@ -89,7 +84,8 @@ void task_button(void *parameters)
 	/*  Declare & Initialize Task Function variables for argument, led, button and task */
 	btn_config_t *p_btn_config = (btn_config_t *)parameters;
 
-	static led_flag_t value_to_send = NOT_BLINKING;
+	led_flag_t led_flag = NOT_BLINKING;
+	LOGGER_LOG("  Address of led_flag - 0x%X\r\n", &led_flag);
 
 	char *p_task_name = (char *)pcTaskGetName(NULL);
 
@@ -124,21 +120,25 @@ void task_button(void *parameters)
 		if (BTN_PRESSED == p_btn_config->btn_state)
 		{
 			/* Check, Update and Print Led Flag */
-			if (NOT_BLINKING == value_to_send)
+			if (NOT_BLINKING == led_flag)
 			{
-				value_to_send = BLINKING;
+				led_flag = BLINKING;
 
 				/* Print out: Task execution */
 				LOGGER_LOG("  %s - %s\r\n", p_task_name, p_task_blinking_on);
 			}
 			else
 			{
-				value_to_send = NOT_BLINKING;
+				led_flag = NOT_BLINKING;
 
 				/* Print out: Task execution */
 				LOGGER_LOG("  %s - %s\r\n", p_task_name, p_task_blinking_off);
 			}
-			xQueueSendToBack(p_btn_config->queue_handle, &value_to_send, portMAX_DELAY);
+		}
+
+		if (BLINKING == led_flag)
+		{
+			xSemaphoreGive(p_btn_config->semaphore_handle);
 		}
 
 		/* We want this task to execute every 250 milliseconds. */

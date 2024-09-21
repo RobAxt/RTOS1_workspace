@@ -59,112 +59,91 @@
 /********************** internal functions declaration ***********************/
 
 /********************** internal data definition *****************************/
-const char *p_task_led 			= "Task LED - Demo Code";
+const char *p_task_led = "Task LED - Demo Code";
 
-const char *p_task_led_t_on		= "LDX turn On ";
-const char *p_task_led_t_off	= "LDX turn Off";
+const char *p_task_led_t_on = "LDX turn On ";
+const char *p_task_led_t_off = "LDX turn Off";
 
-led_config_t led_config[]	= {{LED_A_PORT,	LED_A_PIN, 		\
-								LED_OFF,	NOT_BLINKING,	\
-								NULL},
-							   {LED_B_PORT,	LED_B_PIN, 		\
-								LED_OFF,	NOT_BLINKING,	\
-								NULL},
-							   {LED_C_PORT,	LED_C_PIN, 		\
-								LED_OFF,	NOT_BLINKING,	\
-								NULL}};
+led_config_t led_config[] = { { LED_A_PORT, LED_A_PIN, LED_OFF, NOT_BLINKING, NULL },
+		                      { LED_B_PORT, LED_B_PIN, LED_OFF, NOT_BLINKING, NULL },
+							  { LED_C_PORT, LED_C_PIN, LED_OFF, NOT_BLINKING, NULL }
+                            };
 
 /********************** external data declaration *****************************/
 uint32_t g_task_led_cnt;
 
 /********************** external functions definition ************************/
 /* Task A, B and C thread */
-void task_led(void *parameters)
-{
-	#if (TEST_X == TEST_0)
+void task_led(void *parameters) {
+#if (TEST_X == TEST_0)
 	g_task_led_cnt = G_TASK_LED_CNT_INI;
 
 	/*  Declare & Initialize Task Function variables for argument, led, button and task */
-	led_config_t *p_led_config = (led_config_t *)parameters;
-	led_flag_t received_value;
+	led_config_t *p_led_config = (led_config_t*) parameters;
 
 	TickType_t last_wake_time;
 
 	/* The xLastWakeTime variable needs to be initialized with the current tick
-	   count. ws*/
+	 count. ws*/
 	last_wake_time = xTaskGetTickCount();
 
-	char *p_task_name = (char *)pcTaskGetName(NULL);
+	char *p_task_name = (char*) pcTaskGetName(NULL);
 
 	/* Print out: Application Update */
 	LOGGER_LOG("  %s is running - %s\r\n", p_task_name, p_task_led);
 
-	#endif
+#endif
 
-	#if (TEST_X == TEST_1)
+#if (TEST_X == TEST_1)
 
 	/* Here another code option */
 
 	#endif
 
-	#if (TEST_X == TEST_2)
+#if (TEST_X == TEST_2)
 
 	/* Here Chatbot Artificial Intelligence generated code */
 
 	#endif
 
 	/* As per most tasks, this task is implemented in an infinite loop. */
-	for (;;)
-	{
+	for (;;) {
 
-		#if (TEST_X == TEST_0)
+#if (TEST_X == TEST_0)
 
 		/* Update Task Led Counter */
 		g_task_led_cnt++;
 
-		/* Check Queue Messages */
-		if (0 != uxQueueMessagesWaiting(p_led_config->queue_handle))
-		{
-			xQueueReceive(p_led_config->queue_handle, &received_value, 0);
+		xSemaphoreTake(p_led_config->semaphore_handle, portMAX_DELAY);
 
-			p_led_config->led_flag = received_value;
+		/* Check, Update and Print Led State */
+		if (GPIO_PIN_RESET == (p_led_config->led_state)) {
+			p_led_config->led_state = GPIO_PIN_SET;
+
+			/* Print out: Task execution */
+			//LOGGER_LOG("  %s - %s\r\n", p_task_name, p_task_led_t_on);
+		} else {
+			p_led_config->led_state = GPIO_PIN_RESET;
+
+			/* Print out: Task execution */
+			//LOGGER_LOG("  %s - %s\r\n", p_task_name, p_task_led_t_off);
 		}
 
-		/* Check Led Flag */
-		if (BLINKING == (p_led_config->led_flag))
-		{
-			/* Check, Update and Print Led State */
-			if (GPIO_PIN_RESET == (p_led_config->led_state))
-			{
-				p_led_config->led_state = GPIO_PIN_SET;
-
-				/* Print out: Task execution */
-				//LOGGER_LOG("  %s - %s\r\n", p_task_name, p_task_led_t_on);
-			}
-			else
-			{
-				p_led_config->led_state = GPIO_PIN_RESET;
-
-				/* Print out: Task execution */
-				//LOGGER_LOG("  %s - %s\r\n", p_task_name, p_task_led_t_off);
-			}
-
-			/* Update HW Led State */
-		    HAL_GPIO_WritePin(p_led_config->led_gpio_port, p_led_config->led_pin, p_led_config->led_state);
-		}
+		/* Update HW Led State */
+		HAL_GPIO_WritePin(p_led_config->led_gpio_port, p_led_config->led_pin, p_led_config->led_state);
 
 		/* We want this task to execute exactly every 250 milliseconds. */
 		vTaskDelayUntil(&last_wake_time, LED_TICK_CNT_MAX);
 
-		#endif
+#endif
 
-		#if (TEST_X == TEST_1)
+#if (TEST_X == TEST_1)
 
 		/* Here another code option */
 
 		#endif
 
-		#if (TEST_X == TEST_2)
+#if (TEST_X == TEST_2)
 
 		/* Here Chatbot Artificial Intelligence generated code */
 

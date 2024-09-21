@@ -52,11 +52,11 @@ typedef enum {PRESSED, NOT_PRESSED} btn_flag_t;
 
 typedef struct
 {
-	GPIO_TypeDef *	btn_gpio_port;
-	uint16_t		btn_pin;
-	GPIO_PinState	btn_state;
-	btn_flag_t		btn_flag;
-	QueueHandle_t	queue_handle;
+	GPIO_TypeDef *		btn_gpio_port;
+	uint16_t			btn_pin;
+	GPIO_PinState		btn_state;
+	btn_flag_t			btn_flag;
+	SemaphoreHandle_t	semaphore_handle;
 } btn_config_t;
 
 extern btn_config_t btn_config[];
