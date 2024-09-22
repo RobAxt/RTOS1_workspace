@@ -13,16 +13,26 @@ LOGGER_LOG("  Address of led_flag - 0x%08lx\r\n", (uint32_t) &led_flag);
 ```
 Entonces se decidio verificar que dirección de memoria tomaba la variable led_flag en cada una las llamas a la tarea task_button. Se observa que en las tres instancias la dirección es la misma, por lo cual tiene sentido el comportamiento que los tres leds parpaden al unisono.
 > app_init is running - Tick [mS] = 0
+> 
 >  RTOS - Event-Triggered Systems (ETS)
 >  freertos_app_example_5_6: Demo Code
+> 
 >   Address of led_flag - 0x20000048
+> 
 >   Task CC is running - Task BUTTON - Demo Code
+> 
 >   Task A is running - Task LED - Demo Code
+> 
 >   Address of led_flag - 0x20000048
+> 
 >   Task AA is running - Task BUTTON - Demo Code
+> 
 >   Task B is running - Task LED - Demo Code
+> 
 >   Address of led_flag - 0x20000048
+> 
 >   Task BB is running - Task BUTTON - Demo Code
+> 
 >   Task C is running - Task LED - Demo Code
 ***
 Se procede a realizar la misma prueba pero sin usar la variable led_flag como static
