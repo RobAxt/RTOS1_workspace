@@ -42,16 +42,27 @@ LOGGER_LOG("  Address of led_flag - 0x%08lx\r\n", (uint32_t) &led_flag);
  ```
 En es caso se observa que en cada instancia la variable led_flag toma direcciones de memoria distintas y esto concuerda con las observaciones del comportamiento de los leds. El parpadeo de los leds dejo de ser sincronizado y depende que tarea task_button haya capturado la pulsación del botón.
 >  app_init is running - Tick [mS] = 0
+> 
 > RTOS - Event-Triggered Systems (ETS)
+> 
 > freertos_app_example_5_6: Demo Code
+> 
 >  Address of led_flag - 0x200025B7
+> 
 >  Task CC is running - Task BUTTON - Demo Code
+> 
 >  Task A is running - Task LED - Demo Code
+> 
 >  Address of led_flag - 0x200013D7
+> 
 >  Task AA is running - Task BUTTON - Demo Code
+> 
 >  Task B is running - Task LED - Demo Code
+> 
 >  Address of led_flag - 0x20001CC7
+> 
 >  Task BB is running - Task BUTTON - Demo Code
+> 
 >  Task C is running - Task LED - Demo Code
 ***
 # Mejoras al contar con un único botón en la placa:
