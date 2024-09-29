@@ -60,6 +60,7 @@ typedef struct
 } led_config_t;
 
 extern led_config_t led_config[];
+extern led_flag_t led_blinking_flag;
 
 /********************** external data declaration ****************************/
 

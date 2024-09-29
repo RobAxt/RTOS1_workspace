@@ -71,6 +71,7 @@ const char *p_app	= " freertos_app_example_6_6: Demo Code\r\n";
 SemaphoreHandle_t h_a_bin_sem;
 SemaphoreHandle_t h_b_bin_sem;
 SemaphoreHandle_t h_c_bin_sem;
+SemaphoreHandle_t h_mtx_sem;
 
 /* Declare a variable of type TaskHandle_t. This is used to reference threads. */
 TaskHandle_t h_task_a;
@@ -95,17 +96,19 @@ void app_init(void)
 	vSemaphoreCreateBinary(h_a_bin_sem);
 	vSemaphoreCreateBinary(h_b_bin_sem);
 	vSemaphoreCreateBinary(h_c_bin_sem);
+	h_mtx_sem = xSemaphoreCreateMutex();
 
     /* Check the queue or semaphore (binary or counting) or mutex was created 
      * successfully. */
 	configASSERT(NULL != h_a_bin_sem);
 	configASSERT(NULL != h_b_bin_sem);
 	configASSERT(NULL != h_c_bin_sem);
-
+	configASSERT(NULL != h_mtx_sem);
 	/* Add queue or semaphore (binary or counting) or mutex to registry. */
 	vQueueAddToRegistry(h_a_bin_sem, "A BIN Handle");
 	vQueueAddToRegistry(h_b_bin_sem, "B BIN Handle");
 	vQueueAddToRegistry(h_c_bin_sem, "C BIN Handle");
+	vQueueAddToRegistry(h_mtx_sem, "MTX Handle");
 
 	/* Add threads, ... */
 	led_config_t* p_led_config;
@@ -116,6 +119,7 @@ void app_init(void)
     p_btn_config = &btn_config[0];
 	p_led_config->binary_semaphore_handle = h_a_bin_sem;
 	p_btn_config->binary_semaphore_handle = h_a_bin_sem;
+
     /* Task A thread at priority 1 */
     ret = xTaskCreate(task_led,							/* Pointer to the function thats implement the task. */
 					  "Task A",							/* Text name for the task. This is to facilitate debugging only. */
@@ -142,6 +146,7 @@ void app_init(void)
     p_btn_config = &btn_config[1];
 	p_led_config->binary_semaphore_handle = h_b_bin_sem;
 	p_btn_config->binary_semaphore_handle = h_b_bin_sem;
+
     /* Task B thread at priority 1 */
     ret = xTaskCreate(task_led,							/* Pointer to the function thats implement the task. */
 					  "Task B",							/* Text name for the task. This is to facilitate debugging only. */
@@ -168,6 +173,7 @@ void app_init(void)
     p_btn_config = &btn_config[2];
 	p_led_config->binary_semaphore_handle = h_c_bin_sem;
 	p_btn_config->binary_semaphore_handle = h_c_bin_sem;
+
     /* Task C thread at priority 1 */
     ret = xTaskCreate(task_led,							/* Pointer to the function thats implement the task. */
 					  "Task C",							/* Text name for the task. This is to facilitate debugging only. */

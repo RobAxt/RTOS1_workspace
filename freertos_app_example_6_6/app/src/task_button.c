@@ -65,15 +65,9 @@ const char *p_task_button		= "Task BUTTON - Demo Code";
 const char *p_task_blinking_on	= "Blinking turn On ";
 const char *p_task_blinking_off	= "Blinking turn Off";
 
-btn_config_t btn_config[]	= {{BTN_A_PORT,	BTN_A_PIN,		\
-								BTN_HOVER,	NOT_PRESSED,	\
-								NULL},
-					  	   	   {BTN_B_PORT,	BTN_B_PIN, 		\
-								BTN_HOVER,	NOT_PRESSED,	\
-								NULL},
-							   {BTN_C_PORT,	BTN_C_PIN,		\
-								BTN_HOVER,	NOT_PRESSED,	\
-								NULL}};
+btn_config_t btn_config[]	= {{BTN_A_PORT,	BTN_A_PIN, BTN_HOVER, NOT_PRESSED, NULL},
+					  	   	   {BTN_B_PORT,	BTN_B_PIN, BTN_HOVER, NOT_PRESSED, NULL},
+							   {BTN_C_PORT,	BTN_C_PIN, BTN_HOVER, NOT_PRESSED, NULL}};
 
 /********************** external data declaration *****************************/
 uint32_t g_task_btn_cnt;
@@ -88,8 +82,6 @@ void task_button(void *parameters)
 
 	/*  Declare & Initialize Task Function variables for argument, led, button and task */
 	btn_config_t *p_btn_config = (btn_config_t *)parameters;
-
-	static led_flag_t value_to_send = NOT_BLINKING;
 
 	char *p_task_name = (char *)pcTaskGetName(NULL);
 
@@ -123,21 +115,23 @@ void task_button(void *parameters)
 		p_btn_config->btn_state = HAL_GPIO_ReadPin(p_btn_config->btn_gpio_port, p_btn_config->btn_pin);
 		if (BTN_PRESSED == p_btn_config->btn_state)
 		{
+			xSemaphoreTake(h_mtx_sem, portMAX_DELAY);
 			/* Check, Update and Print Led Flag */
-			if (NOT_BLINKING == value_to_send)
+			if (NOT_BLINKING == led_blinking_flag)
 			{
-				value_to_send = BLINKING;
+				led_blinking_flag = BLINKING;
 
 				/* Print out: Task execution */
 				LOGGER_LOG("  %s - %s\r\n", p_task_name, p_task_blinking_on);
 			}
 			else
 			{
-				value_to_send = NOT_BLINKING;
+				led_blinking_flag = NOT_BLINKING;
 
 				/* Print out: Task execution */
 				LOGGER_LOG("  %s - %s\r\n", p_task_name, p_task_blinking_off);
 			}
+			xSemaphoreGive(h_mtx_sem);
 
 			/* 'Give' the semaphore to unblock the task. */
 			xSemaphoreGive(p_btn_config->binary_semaphore_handle);

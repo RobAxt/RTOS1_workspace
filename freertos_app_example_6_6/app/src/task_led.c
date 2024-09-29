@@ -64,18 +64,14 @@ const char *p_task_led 			= "Task LED - Demo Code";
 const char *p_task_led_t_on		= "LDX turn On ";
 const char *p_task_led_t_off	= "LDX turn Off";
 
-led_config_t led_config[]	= {{LED_A_PORT,	LED_A_PIN, 		\
-								LED_OFF,	NOT_BLINKING,	\
-								NULL},
-							   {LED_B_PORT,	LED_B_PIN, 		\
-								LED_OFF,	NOT_BLINKING,	\
-								NULL},
-							   {LED_C_PORT,	LED_C_PIN, 		\
-								LED_OFF,	NOT_BLINKING,	\
-								NULL}};
+led_config_t led_config[]	= {{LED_A_PORT,	LED_A_PIN, LED_OFF, NOT_BLINKING, NULL},
+							   {LED_B_PORT,	LED_B_PIN, LED_OFF, NOT_BLINKING, NULL},
+							   {LED_C_PORT,	LED_C_PIN, LED_OFF, NOT_BLINKING, NULL}};
 
 /********************** external data declaration *****************************/
 uint32_t g_task_led_cnt;
+
+led_flag_t led_blinking_flag;
 
 /********************** external functions definition ************************/
 /* Task A, B and C thread */
@@ -86,7 +82,6 @@ void task_led(void *parameters)
 
 	/*  Declare & Initialize Task Function variables for argument, led, button and task */
 	led_config_t *p_led_config = (led_config_t *)parameters;
-	led_flag_t received_value;
 
 	TickType_t last_wake_time;
 
@@ -132,17 +127,11 @@ void task_led(void *parameters)
 		/* Check Binary Semaphore */
 		if (pdTRUE == xSemaphoreTake(p_led_config->binary_semaphore_handle, (portTickType) 0))
 		{
-        	/* Check, Update and Print Led Flag */
-			if (NOT_BLINKING == p_led_config->led_flag)
-			{
-				received_value = BLINKING;
-			}
-			else
-			{
-				received_value = NOT_BLINKING;
-			}
 
-			p_led_config->led_flag = received_value;
+			xSemaphoreTake(h_mtx_sem, portMAX_DELAY);
+			p_led_config->led_flag = led_blinking_flag ;
+			xSemaphoreGive(h_mtx_sem);
+
 		}
 
 		/* Check Led Flag */

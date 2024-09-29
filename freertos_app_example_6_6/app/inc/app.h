@@ -63,6 +63,7 @@ extern "C" {
 extern SemaphoreHandle_t h_a_bin_sem;
 extern SemaphoreHandle_t h_b_bin_sem;
 extern SemaphoreHandle_t h_c_bin_sem;
+extern SemaphoreHandle_t h_mtx_sem;
 
 /* Declare a variable of type TaskHandle_t. This is used to reference threads. */
 extern TaskHandle_t h_task_a;
