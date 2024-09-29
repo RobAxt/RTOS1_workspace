@@ -60,6 +60,12 @@
 /********************** internal data definition *****************************/
 const char *p_task_b 				= "Task B - Gateway B";
 
+const char *p_task_b_wait_entry_b	= "  ==> Task    B - Wait:   Entry_B";
+const char *p_task_b_wait_exit_b	= "  ==> Task    B - Wait:   Exit_B";
+
+const char *p_task_b_wait_mutex		= "  ==> Task    B - Wait:   Mutex";
+const char *p_task_b_signal_mutex	= "  ==> Task    B - Signal: Mutex    ==>";
+
 const char *p_task_b_wait_2500mS	= "  ==> Task    B - Wait:   2500mS";
 
 /********************** external data declaration *****************************/
@@ -78,7 +84,8 @@ void task_b(void *parameters)
 
 	/* Print out: Application Update */
 	LOGGER_LOG("  %s is running - %s\r\n", p_task_name, p_task_b);
-
+	xSemaphoreTake(h_entry_b_bin_sem, (portTickType) 0);
+	xSemaphoreTake(h_exit_b_bin_sem, (portTickType) 0);
 	#endif
 
 	#if (TEST_X == TEST_1)
@@ -102,6 +109,21 @@ void task_b(void *parameters)
 		/* Update Task B Counter */
 		g_task_b_cnt++;
 
+		/* Print out: Wait Entry B */
+		LOGGER_LOG("  %s\r\n", p_task_b_wait_entry_b);
+		xSemaphoreTake(h_entry_b_bin_sem, portMAX_DELAY);
+
+		/* Print out: Wait Mutex */
+		LOGGER_LOG("  %s\r\n", p_task_b_wait_mutex);
+		xSemaphoreTake(h_mutex_mut_sem, portMAX_DELAY);
+
+		/* Print out: Wait Exit B */
+		LOGGER_LOG("  %s\r\n", p_task_b_wait_exit_b);
+		xSemaphoreTake(h_exit_b_bin_sem, portMAX_DELAY);
+
+		/* Print out: Signal Mutex */
+		LOGGER_LOG("  %s\r\n", p_task_b_signal_mutex);
+		xSemaphoreGive(h_mutex_mut_sem);
 		/* Print out: Wait 2500mS */
 //		LOGGER_LOG("  %s - %s %d\r\n", p_task_b_wait_2500mS, GET_NAME(g_task_b_cnt), (int)g_task_b_cnt);
 		LOGGER_LOG("  %s\r\n", p_task_b_wait_2500mS);

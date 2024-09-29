@@ -64,6 +64,10 @@ const char *p_task_test						= "Periodically excites other tasks";
 const char *p_task_test_priority			= "  <=> Task Test - Priority:";
 const char *p_task_test_e_task_test_array	= "  <=> Task Test - e_task_test_array:";
 
+const char *p_task_test_signal_entry_a		= "  <=> Task Test - Signal: Entry_A  <=>";
+const char *p_task_test_signal_exit_a		= "  <=> Task Test - Signal: Exit_A   <=>";
+const char *p_task_test_signal_entry_b		= "  <=> Task Test - Signal: Entry_B  <=>";
+const char *p_task_test_signal_exit_b		= "  <=> Task Test - Signal: Exit_B   <=>";
 const char *p_task_test_signal_error  		= "  <=> Task Test - Signal: Error    <=>";
 
 const char *p_task_test_wait_5000mS			= "  <=> Task Test - Wait:   5000mS";
@@ -188,19 +192,27 @@ void task_test(void *parameters)
 			switch (e_task_test_array[index]) {
 
 	    		case Entry_A:
-
+	    			/* Print out: Signal Entry A */
+	    			LOGGER_LOG("  %s\r\n", p_task_test_signal_entry_a);
+	    			xSemaphoreGive(h_entry_a_bin_sem);
 		    		break;
 
 	    		case Exit_A:
-
+	    			/* Print out: Signal Exit A */
+	    			LOGGER_LOG("  %s\r\n", p_task_test_signal_exit_a);
+	    			xSemaphoreGive(h_exit_a_bin_sem);
 		    		break;
 
 	    		case Entry_B:
-
+	    			/* Print out: Signal Entry B */
+	    			LOGGER_LOG("  %s\r\n", p_task_test_signal_entry_b);
+	    			xSemaphoreGive(h_entry_b_bin_sem);
 		    		break;
 
 	    		case Exit_B:
-
+	    			/* Print out: Signal Exit B */
+	    			LOGGER_LOG("  %s\r\n", p_task_test_signal_exit_b);
+	    			xSemaphoreGive(h_exit_b_bin_sem);
 		    		break;
 
 		    	case Error:
