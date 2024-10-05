@@ -1,0 +1,56 @@
+/* Task A Flag */
+bool task_a_flag;
+
+const char *p_task_a_wait_entry		= "  ==> Task    A - Wait:   Entry";
+const char *p_task_a_wait_continue	= "  ==> Task    A - Wait:   Continue";
+
+const char *p_task_a_wait_mutex		= "  ==> Task    A - Wait:   Mutex";
+const char *p_task_a_signal_mutex	= "  ==> Task    A - Signal: Mutex    ==>";
+
+const char *p_task_a_g_tasks_cnt	= "  <=> Task    A - g_tasks_cnt :";
+
+    /* Init Task A & B Counter and Reset Task A Flag */
+	g_tasks_cnt = G_TASKS_CNT_INI;
+    task_a_flag = false;
+    
+    xSemaphoreTake(h_entry_bin_sem, (portTickType) 0);
+	xSemaphoreTake(h_continue_bin_sem, (portTickType) 0);
+
+		/* Print out: Wait Entry */
+		LOGGER_LOG("  %s\r\n", p_task_a_wait_entry);
+		xSemaphoreTake(h_entry_bin_sem, portMAX_DELAY);
+
+		/* Print out: Wait Continue */
+		LOGGER_LOG("  %s\r\n", p_task_a_wait_continue);
+		xSemaphoreTake(h_continue_bin_sem, portMAX_DELAY);
+
+		/* Print out: Wait Mutex */
+		LOGGER_LOG("  %s\r\n", p_task_a_wait_mutex);
+		xSemaphoreTake(h_mutex_mut_sem, portMAX_DELAY);
+
+		/* Print out: Signal Mutex */
+		LOGGER_LOG("  %s\r\n", p_task_a_signal_mutex);
+		xSemaphoreGive(h_mutex_mut_sem);
+
+		/* Update Task A & B Counter */
+		g_tasks_cnt++;
+
+		/* Print out: Task A & B Counter*/
+		LOGGER_LOG("  %s %d\r\n", p_task_a_g_tasks_cnt, (int)g_tasks_cnt);
+
+		/* Check Task A & B Counter and Set Task A Flag */
+		if (G_TASKS_CNT_MAX == g_tasks_cnt)
+		{
+			/* Set Task A Flag */
+			task_a_flag = true;
+		}
+
+		/* Check Task A Flag, Reset Task A Flag and Do it here */
+		if (true == task_a_flag)
+		{
+			/* Reset Task A Flag */
+			task_a_flag = false;
+			
+			/* Do it here */
+
+		}

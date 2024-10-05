@@ -1,0 +1,41 @@
+/* Task A & B Counter */
+uint32_t	g_tasks_cnt;
+
+/* Declare a variable of type SemaphoreHandle_t (binary or counting) or mutex. 
+ * This is used to reference the semaphore that is used to synchronize a thread
+ * with other thread or to ensure mutual exclusive access to...*/
+SemaphoreHandle_t h_entry_bin_sem;
+SemaphoreHandle_t h_exit_bin_sem;
+
+SemaphoreHandle_t h_continue_bin_sem;
+
+SemaphoreHandle_t h_mutex_mut_sem;
+
+	/* Before a queue or semaphore (binary or counting) or mutex is used it must 
+     * be explicitly created */
+	vSemaphoreCreateBinary(h_entry_bin_sem);
+	vSemaphoreCreateBinary(h_exit_bin_sem);
+
+	vSemaphoreCreateBinary(h_continue_bin_sem);
+
+	h_mutex_mut_sem = xSemaphoreCreateMutex();
+
+	
+    /* Before a queue or semaphore (binary or counting) or mutex is used it must 
+     * be explicitly created */
+  	configASSERT(NULL != h_entry_bin_sem);
+	configASSERT(NULL != h_exit_bin_sem);
+	
+	configASSERT(NULL != h_continue_bin_sem);
+
+    configASSERT(NULL != h_mutex_mut_sem);
+
+
+    /* Check the queue or semaphore (binary or counting) or mutex was created 
+     * successfully. */
+   	vQueueAddToRegistry(h_entry_bin_sem, "Entry BIN Handle");
+	vQueueAddToRegistry(h_exit_bin_sem, "Exit BIN Handle");
+
+	vQueueAddToRegistry(h_continue_bin_sem, "Continue BIN Handle");
+
+	vQueueAddToRegistry(h_mutex_mut_sem, "Mutex MUT Handle");
