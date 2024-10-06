@@ -45,6 +45,7 @@
 #include "dwt.h"
 
 /* Application & Tasks includes. */
+#include "app.h"
 #include "board.h"
 #include "task_a.h"
 #include "task_b.h"
@@ -61,12 +62,23 @@ const char *p_sys	= " RTOS - Event-Triggered Systems (ETS)\r\n";
 const char *p_app	= " freertos_app_example_002: Parking lot\r\n";
 
 /********************** external data declaration *****************************/
+/* Task A & B Counter */
+//uint32_t	g_tasks_cnt;
+
 /* Declare a variable of type QueueHandle_t. This is used to reference queues*/
 /* This is used to send messages from the Button task to the Led task. */
 
 /* Declare a variable of type SemaphoreHandle_t (binary or counting) or mutex.
  * This is used to reference the semaphore that is used to synchronize a thread
  * with other thread or to ensure mutual exclusive access to...*/
+SemaphoreHandle_t h_entry_bin_sem;
+SemaphoreHandle_t h_exit_bin_sem;
+
+SemaphoreHandle_t h_continue_bin_sem;
+
+//SemaphoreHandle_t h_mutex_mut_sem;
+
+SemaphoreHandle_t h_counter_sem;
 
 /* Declare a variable of type TaskHandle_t. This is used to reference threads. */
 TaskHandle_t h_task_a;
@@ -85,12 +97,35 @@ void app_init(void)
 
     /* Before a queue or semaphore (binary or counting) or mutex is used it must 
      * be explicitly created */
+	vSemaphoreCreateBinary(h_entry_bin_sem);
+	vSemaphoreCreateBinary(h_exit_bin_sem);
+
+	vSemaphoreCreateBinary(h_continue_bin_sem);
+
+//	h_mutex_mut_sem = xSemaphoreCreateMutex();
+
+	h_counter_sem = xSemaphoreCreateCounting(G_TASKS_CNT_MAX, G_TASKS_CNT_INI);
 
     /* Check the queue or semaphore (binary or counting) or mutex was created 
      * successfully. */
+  	configASSERT(NULL != h_entry_bin_sem);
+	configASSERT(NULL != h_exit_bin_sem);
+
+	configASSERT(NULL != h_continue_bin_sem);
+
+//    configASSERT(NULL != h_mutex_mut_sem);
+
+    configASSERT(NULL != h_counter_sem);
 
 	/* Add queue or semaphore (binary or counting) or mutex to registry. */
+   	vQueueAddToRegistry(h_entry_bin_sem, "Entry BIN Handle");
+	vQueueAddToRegistry(h_exit_bin_sem, "Exit BIN Handle");
 
+	vQueueAddToRegistry(h_continue_bin_sem, "Continue BIN Handle");
+
+//	vQueueAddToRegistry(h_mutex_mut_sem, "Mutex MUT Handle");
+
+	vQueueAddToRegistry(h_counter_sem, "counter CNT Handle");
 	/* Add threads, ... */
     BaseType_t ret;
 

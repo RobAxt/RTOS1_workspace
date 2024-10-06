@@ -54,13 +54,23 @@
 #define TASK_B_TICK_DEL_MAX		(pdMS_TO_TICKS(2500ul))
 
 /********************** internal data declaration ****************************/
+/* Task B Flag */
+bool task_b_flag;
 
 /********************** internal functions declaration ***********************/
 
 /********************** internal data definition *****************************/
-const char *p_task_b 				= "Task B - Output Gateway";
+const char *p_task_b 					= "Task B - Output Gateway";
 
-const char *p_task_b_wait_2500mS	= "  ==> Task    B - Wait:   2500mS";
+const char *p_task_b_wait_exit			= "  ==> Task    B - Wait:   Exit";
+//const char *p_task_b_signal_continue	= "  ==> Task    B - Signal: Continue ==>";
+const char *p_task_b_wait_counter       = "  ==> Task    B - Signal: Counter";
+//const char *p_task_b_wait_mutex			= "  ==> Task    B - Wait:   Mutex";
+//const char *p_task_b_signal_mutex		= "  ==> Task    B - Signal: Mutex    ==>";
+
+//const char *p_task_b_g_tasks_cnt		= "  <=> Task    B - g_tasks_cnt:";
+
+const char *p_task_b_wait_2500mS		= "  ==> Task    B - Wait:   2500mS";
 
 /********************** external data declaration *****************************/
 uint32_t g_task_b_cnt;
@@ -78,6 +88,11 @@ void task_b(void *parameters)
 
 	/* Print out: Application Update */
 	LOGGER_LOG("  %s is running - %s\r\n", p_task_name, p_task_b);
+
+    /* Reset Task B Flag */
+    task_b_flag = false;
+
+    xSemaphoreTake(h_exit_bin_sem, (portTickType) 0);
 
 	#endif
 
@@ -102,12 +117,43 @@ void task_b(void *parameters)
 		/* Update Task B Counter */
 		g_task_b_cnt++;
 
-		/* Print out: Wait 2500mS */
-//		LOGGER_LOG("  %s - %s %d\r\n", p_task_b_wait_2500mS, GET_NAME(g_task_b_cnt), (int)g_task_b_cnt);
-		LOGGER_LOG("  %s\r\n", p_task_b_wait_2500mS);
+		/* Print out: Wait Exit */
+		LOGGER_LOG("  %s\r\n", p_task_b_wait_exit);
+		xSemaphoreTake(h_exit_bin_sem, portMAX_DELAY);
 
-		/* We want this task to execute every 2500 milliseconds. */
-		vTaskDelay(TASK_B_TICK_DEL_MAX);
+		/* Print out: Wait Mutex */
+		//LOGGER_LOG("  %s\r\n", p_task_b_wait_mutex);
+		//xSemaphoreTake(h_mutex_mut_sem, portMAX_DELAY);
+		/* Update Task A & B Counter */
+		//g_tasks_cnt--;
+
+		/* Print out: Task A & B Counter*/
+		//LOGGER_LOG("  %s %d\r\n", p_task_b_g_tasks_cnt, (int)g_tasks_cnt);
+
+		/* Check Task A & B Counter and Set Task B Flag */
+		//if ((G_TASKS_CNT_MAX - 1) == g_tasks_cnt)
+		//{
+		/* Set Task B Flag */
+		//	task_b_flag = true;
+		//}
+
+		/* Print out: Signal Mutex */
+		//LOGGER_LOG("  %s\r\n", p_task_b_signal_mutex);
+		//xSemaphoreGive(h_mutex_mut_sem);
+
+		/* Check Task B Flag, Reset Task B Flag and Do it here */
+		//if (true == task_b_flag)
+		//{
+			/* Reset Task B Flag */
+		//	task_b_flag = false;
+
+		LOGGER_LOG("  %s\r\n", p_task_b_wait_counter);
+		xSemaphoreGive(h_counter_sem);
+
+		/* Do it here */
+		/* Print out: Signal Continue */
+		//LOGGER_LOG("  %s\r\n", p_task_b_signal_continue);
+		//xSemaphoreGive(h_continue_bin_sem);
 
 		#endif
 

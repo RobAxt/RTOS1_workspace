@@ -64,11 +64,14 @@ const char *p_task_test						= "Periodically excites other tasks";
 const char *p_task_test_priority			= "  <=> Task Test - Priority:";
 const char *p_task_test_e_task_test_array	= "  <=> Task Test - e_task_test_array:";
 
+const char *p_task_test_signal_entry		= "  <=> Task Test - Signal: Entry    <=>";
+const char *p_task_test_signal_exit			= "  <=> Task Test - Signal: Exit     <=>";
+
 const char *p_task_test_signal_error  		= "  <=> Task Test - Signal: Error    <=>";
 
 const char *p_task_test_wait_5000mS			= "  <=> Task Test - Wait:   5000mS";
 
-#define E_TASK_TEST_X (1)
+#define E_TASK_TEST_X (4)
 
 #if (E_TASK_TEST_X == 0)
 /* Array of events to excite tasks */
@@ -174,10 +177,16 @@ void task_test(void *parameters)
 
 	    		case Entry:
 
+	    			/* Print out: Signal Entry */
+	    			LOGGER_LOG("  %s\r\n", p_task_test_signal_entry);
+	    			xSemaphoreGive(h_entry_bin_sem);
 		    		break;
 
 	    		case Exit:
 
+	    			/* Print out: Signal Exit */
+	    			LOGGER_LOG("  %s\r\n", p_task_test_signal_exit);
+	    			xSemaphoreGive(h_exit_bin_sem);
 		    		break;
 
 		    	case Error:

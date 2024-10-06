@@ -54,11 +54,21 @@
 #define TASK_A_TICK_DEL_MAX		(pdMS_TO_TICKS(2500ul))
 
 /********************** internal data declaration ****************************/
+/* Task A Flag */
+bool task_a_flag;
 
 /********************** internal functions declaration ***********************/
 
 /********************** internal data definition *****************************/
 const char *p_task_a				= "Task A - Input Gateway";
+
+const char *p_task_a_wait_entry		= "  ==> Task    A - Wait:   Entry";
+//const char *p_task_a_wait_continue	= "  ==> Task    A - Wait:   Continue";
+const char *p_task_a_wait_counter   = "  ==> Task    A - Wait:   Counter";
+//const char *p_task_a_wait_mutex		= "  ==> Task    A - Wait:   Mutex";
+//const char *p_task_a_signal_mutex	= "  ==> Task    A - Signal: Mutex    ==>";
+
+//const char *p_task_a_g_tasks_cnt	= "  <=> Task    A - g_tasks_cnt:";
 
 const char *p_task_a_wait_2500mS	= "  ==> Task    A - Wait:   2500mS";
 
@@ -79,6 +89,13 @@ void task_a(void *parameters)
 	/* Print out: Application Update */
 	LOGGER_LOG("  %s is running - %s\r\n", p_task_name, p_task_a);
 
+    /* Init Task A & B Counter and Reset Task A Flag */
+//	g_tasks_cnt = G_TASKS_CNT_INI;
+//    task_a_flag = false;
+
+    xSemaphoreTake(h_entry_bin_sem, (portTickType) 0);
+	xSemaphoreTake(h_continue_bin_sem, (portTickType) 0);
+	
 	#endif
 
 	#if (TEST_X == TEST_1)
@@ -102,12 +119,19 @@ void task_a(void *parameters)
 		/* Update Task A Counter */
 		g_task_a_cnt++;
 
-		/* Print out: Wait 2500mS */
-//		LOGGER_LOG("  %s - %s %d\r\n", p_task_a_wait_2500mS, GET_NAME(g_task_a_cnt), (int)g_task_a_cnt);
-		LOGGER_LOG("  %s\r\n", p_task_a_wait_2500mS);
+		/* Print out: Wait Entry */
+		LOGGER_LOG("  %s\r\n", p_task_a_wait_entry);
+		xSemaphoreTake(h_entry_bin_sem, portMAX_DELAY);
+		LOGGER_LOG("  New Car Arrived\r\n");
 
-		/* We want this task to execute every 2500 milliseconds. */
-		vTaskDelay(TASK_A_TICK_DEL_MAX);
+		LOGGER_LOG("  %s\r\n", p_task_a_wait_counter);
+		xSemaphoreTake(h_counter_sem, portMAX_DELAY);
+		LOGGER_LOG("Car parked and there was a free slot\r\n");
+		/* Do it here */
+		/* Print out: Wait Continue */
+		//LOGGER_LOG("  %s\r\n", p_task_a_wait_continue);
+		//xSemaphoreTake(h_continue_bin_sem, portMAX_DELAY);
+
 
 		#endif
 
