@@ -91,7 +91,7 @@ void task_b(void *parameters)
 
     /* Reset Task B Flag */
     task_b_flag = false;
-
+    SemaphoreHandle_t h_exit_bin_sem = (SemaphoreHandle_t) parameters;
     xSemaphoreTake(h_exit_bin_sem, (portTickType) 0);
 
 	#endif

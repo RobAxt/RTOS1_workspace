@@ -72,8 +72,8 @@ const char *p_app	= " freertos_app_example_002: Parking lot\r\n";
  * This is used to reference the semaphore that is used to synchronize a thread
  * with other thread or to ensure mutual exclusive access to...*/
 SemaphoreHandle_t h_entry_bin_sem;
-SemaphoreHandle_t h_exit_bin_sem;
-
+SemaphoreHandle_t h_exit1_bin_sem;
+SemaphoreHandle_t h_exit2_bin_sem;
 SemaphoreHandle_t h_continue_bin_sem;
 
 //SemaphoreHandle_t h_mutex_mut_sem;
@@ -83,6 +83,7 @@ SemaphoreHandle_t h_counter_sem;
 /* Declare a variable of type TaskHandle_t. This is used to reference threads. */
 TaskHandle_t h_task_a;
 TaskHandle_t h_task_b;
+TaskHandle_t h_task_bb;
 TaskHandle_t h_task_test;
 
 /********************** external functions definition ************************/
@@ -98,8 +99,8 @@ void app_init(void)
     /* Before a queue or semaphore (binary or counting) or mutex is used it must 
      * be explicitly created */
 	vSemaphoreCreateBinary(h_entry_bin_sem);
-	vSemaphoreCreateBinary(h_exit_bin_sem);
-
+	vSemaphoreCreateBinary(h_exit1_bin_sem);
+	vSemaphoreCreateBinary(h_exit2_bin_sem);
 	vSemaphoreCreateBinary(h_continue_bin_sem);
 
 //	h_mutex_mut_sem = xSemaphoreCreateMutex();
@@ -109,8 +110,8 @@ void app_init(void)
     /* Check the queue or semaphore (binary or counting) or mutex was created 
      * successfully. */
   	configASSERT(NULL != h_entry_bin_sem);
-	configASSERT(NULL != h_exit_bin_sem);
-
+	configASSERT(NULL != h_exit1_bin_sem);
+	configASSERT(NULL != h_exit2_bin_sem);
 	configASSERT(NULL != h_continue_bin_sem);
 
 //    configASSERT(NULL != h_mutex_mut_sem);
@@ -119,8 +120,8 @@ void app_init(void)
 
 	/* Add queue or semaphore (binary or counting) or mutex to registry. */
    	vQueueAddToRegistry(h_entry_bin_sem, "Entry BIN Handle");
-	vQueueAddToRegistry(h_exit_bin_sem, "Exit BIN Handle");
-
+	vQueueAddToRegistry(h_exit1_bin_sem, "Exit BIN Handle");
+	vQueueAddToRegistry(h_exit2_bin_sem, "Exit BIN Handle");
 	vQueueAddToRegistry(h_continue_bin_sem, "Continue BIN Handle");
 
 //	vQueueAddToRegistry(h_mutex_mut_sem, "Mutex MUT Handle");
@@ -144,9 +145,20 @@ void app_init(void)
     ret = xTaskCreate(task_b,						/* Pointer to the function thats implement the task. */
 					  "Task B",						/* Text name for the task. This is to facilitate debugging only. */
 					  (2 * configMINIMAL_STACK_SIZE),	/* Stack depth in words. */
-					  NULL,								/* We are not using the task parameter. */
+					  h_exit1_bin_sem,					/* We are using the task parameter. */
 					  (tskIDLE_PRIORITY + 2ul),			/* This task will run at priority 1. */
 					  &h_task_b);						/* We are using a variable as task handle. */
+
+    /* Check the thread was created successfully. */
+    configASSERT(pdPASS == ret);
+
+    /* Task B thread at priority 2 */
+    ret = xTaskCreate(task_b,						/* Pointer to the function thats implement the task. */
+					  "Task BB",						/* Text name for the task. This is to facilitate debugging only. */
+					  (2 * configMINIMAL_STACK_SIZE),	/* Stack depth in words. */
+					  h_exit2_bin_sem,					/* We are using the task parameter. */
+					  (tskIDLE_PRIORITY + 2ul),			/* This task will run at priority 1. */
+					  &h_task_bb);						/* We are using a variable as task handle. */
 
     /* Check the thread was created successfully. */
     configASSERT(pdPASS == ret);

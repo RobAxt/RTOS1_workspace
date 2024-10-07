@@ -55,7 +55,7 @@
 
 /********************** internal data declaration ****************************/
 /* Events to excite tasks */
-typedef enum e_task_test {Error, Entry, Exit} e_task_test_t;
+typedef enum e_task_test {Error, Entry, Exit1, Exit2} e_task_test_t;
 
 /********************** internal functions declaration ***********************/
 
@@ -95,7 +95,7 @@ const e_task_test_t e_task_test_array[] = {Entry, Entry, Entry, Exit, Exit, Exit
 
 #if (E_TASK_TEST_X == 4)
 /* Array of events to excite tasks */
-const e_task_test_t e_task_test_array[] = {Entry, Entry, Entry, Entry, Exit, Exit, Exit, Exit};
+const e_task_test_t e_task_test_array[] = {Entry, Entry, Entry, Entry, Exit1, Exit1, Exit2, Exit2};
 #endif
 
 #if (E_TASK_TEST_X == 5)
@@ -182,11 +182,18 @@ void task_test(void *parameters)
 	    			xSemaphoreGive(h_entry_bin_sem);
 		    		break;
 
-	    		case Exit:
+	    		case Exit1:
 
 	    			/* Print out: Signal Exit */
 	    			LOGGER_LOG("  %s\r\n", p_task_test_signal_exit);
-	    			xSemaphoreGive(h_exit_bin_sem);
+	    			xSemaphoreGive(h_exit1_bin_sem);
+		    		break;
+
+	    		case Exit2:
+
+	    			/* Print out: Signal Exit */
+	    			LOGGER_LOG("  %s\r\n", p_task_test_signal_exit);
+	    			xSemaphoreGive(h_exit2_bin_sem);
 		    		break;
 
 		    	case Error:
