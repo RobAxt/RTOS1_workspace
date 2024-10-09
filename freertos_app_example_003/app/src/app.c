@@ -45,10 +45,9 @@
 #include "dwt.h"
 
 /* Application & Tasks includes. */
-#include "app.h"
 #include "board.h"
-#include "task_a.h"
-#include "task_b.h"
+#include "task_entry_a.h"
+#include "task_exit_a.h"
 #include "task_test.h"
 
 /********************** macros and definitions *******************************/
@@ -59,34 +58,19 @@
 
 /********************** internal data definition *****************************/
 const char *p_sys	= " RTOS - Event-Triggered Systems (ETS)\r\n";
-const char *p_app	= " freertos_app_example_002: Parking lot\r\n";
+const char *p_app	= " freertos_app_example_003: Vehicular crossing\r\n";
 
 /********************** external data declaration *****************************/
-/* Task A & B Counter */
-//uint32_t	g_tasks_cnt;
-
 /* Declare a variable of type QueueHandle_t. This is used to reference queues*/
 /* This is used to send messages from the Button task to the Led task. */
 
 /* Declare a variable of type SemaphoreHandle_t (binary or counting) or mutex.
  * This is used to reference the semaphore that is used to synchronize a thread
  * with other thread or to ensure mutual exclusive access to...*/
-//SemaphoreHandle_t h_entry_bin_sem;
-//SemaphoreHandle_t h_exit1_bin_sem;
-//SemaphoreHandle_t h_exit2_bin_sem;
-//SemaphoreHandle_t h_continue_bin_sem;
-
-QueueHandle_t h_entry_q;
-QueueHandle_t h_exit_q;
-
-//SemaphoreHandle_t h_mutex_mut_sem;
-
-SemaphoreHandle_t h_counter_sem;
 
 /* Declare a variable of type TaskHandle_t. This is used to reference threads. */
-TaskHandle_t h_task_a;
-TaskHandle_t h_task_b;
-TaskHandle_t h_task_bb;
+TaskHandle_t h_task_entry_a;
+TaskHandle_t h_task_exit_a;
 TaskHandle_t h_task_test;
 
 /********************** external functions definition ************************/
@@ -101,75 +85,36 @@ void app_init(void)
 
     /* Before a queue or semaphore (binary or counting) or mutex is used it must 
      * be explicitly created */
-	//vSemaphoreCreateBinary(h_entry_bin_sem);
-	//vSemaphoreCreateBinary(h_exit1_bin_sem);
-	//vSemaphoreCreateBinary(h_exit2_bin_sem);
-	//vSemaphoreCreateBinary(h_continue_bin_sem);
-	h_entry_q = xQueueCreate( 2, sizeof("AB123YZ"));
-	h_exit_q = xQueueCreate( 2, sizeof("AB123YZ"));
-//	h_mutex_mut_sem = xSemaphoreCreateMutex();
-
-	h_counter_sem = xSemaphoreCreateCounting(G_TASKS_CNT_MAX, G_TASKS_CNT_INI);
 
     /* Check the queue or semaphore (binary or counting) or mutex was created 
      * successfully. */
-	//configASSERT(NULL != h_entry_bin_sem);
-	//configASSERT(NULL != h_exit1_bin_sem);
-	//configASSERT(NULL != h_exit2_bin_sem);
-	//configASSERT(NULL != h_continue_bin_sem);
-	configASSERT(h_entry_q != NULL);
-	configASSERT(h_exit_q != NULL);
-
-//    configASSERT(NULL != h_mutex_mut_sem);
-
-    configASSERT(NULL != h_counter_sem);
 
 	/* Add queue or semaphore (binary or counting) or mutex to registry. */
-   	//vQueueAddToRegistry(h_entry_bin_sem, "Entry BIN Handle");
-	//vQueueAddToRegistry(h_exit1_bin_sem, "Exit BIN Handle");
-	//vQueueAddToRegistry(h_exit2_bin_sem, "Exit BIN Handle");
-	//vQueueAddToRegistry(h_continue_bin_sem, "Continue BIN Handle");
-	vQueueAddToRegistry(h_entry_q, "Entry Queue Handle");
-	vQueueAddToRegistry(h_exit_q, "Exit Queue Handle");
 
-//	vQueueAddToRegistry(h_mutex_mut_sem, "Mutex MUT Handle");
-
-	vQueueAddToRegistry(h_counter_sem, "counter CNT Handle");
 	/* Add threads, ... */
     BaseType_t ret;
 
     /* Task A thread at priority 2 */
-    ret = xTaskCreate(task_a,							/* Pointer to the function thats implement the task. */
-					  "Task A",							/* Text name for the task. This is to facilitate debugging only. */
+    ret = xTaskCreate(task_entry_a,						/* Pointer to the function thats implement the task. */
+					  "Task Entry A",					/* Text name for the task. This is to facilitate debugging only. */
 					  (2 * configMINIMAL_STACK_SIZE),	/* Stack depth in words. */
 					  NULL,								/* We are not using the task parameter. */
 					  (tskIDLE_PRIORITY + 2ul),			/* This task will run at priority 1. */
-					  &h_task_a);						/* We are using a variable as task handle. */
+					  &h_task_entry_a);					/* We are using a variable as task handle. */
 
     /* Check the thread was created successfully. */
     configASSERT(pdPASS == ret);
 
     /* Task B thread at priority 2 */
-    ret = xTaskCreate(task_b,						/* Pointer to the function thats implement the task. */
-					  "Task B",						/* Text name for the task. This is to facilitate debugging only. */
+    ret = xTaskCreate(task_exit_a,						/* Pointer to the function thats implement the task. */
+					  "Task Exit A",					/* Text name for the task. This is to facilitate debugging only. */
 					  (2 * configMINIMAL_STACK_SIZE),	/* Stack depth in words. */
-					  NULL,					/* We are using the task parameter. */
+					  NULL,								/* We are not using the task parameter. */
 					  (tskIDLE_PRIORITY + 2ul),			/* This task will run at priority 1. */
-					  &h_task_b);						/* We are using a variable as task handle. */
+					  &h_task_exit_a);					/* We are using a variable as task handle. */
 
     /* Check the thread was created successfully. */
     configASSERT(pdPASS == ret);
-
-    /* Task B thread at priority 2 */
-    //   ret = xTaskCreate(task_b,						/* Pointer to the function thats implement the task. */
-    //				  "Task BB",						/* Text name for the task. This is to facilitate debugging only. */
-    //				  (2 * configMINIMAL_STACK_SIZE),	/* Stack depth in words. */
-    //				  h_exit2_bin_sem,					/* We are using the task parameter. */
-    //				  (tskIDLE_PRIORITY + 2ul),			/* This task will run at priority 1. */
-    //				  &h_task_bb);						/* We are using a variable as task handle. */
-
-    /* Check the thread was created successfully. */
-    //configASSERT(pdPASS == ret);
 
     /* Task Test thread at priority 1, periodically excites other tasks */
     ret = xTaskCreate(task_test,						/* Pointer to the function thats implement the task. */

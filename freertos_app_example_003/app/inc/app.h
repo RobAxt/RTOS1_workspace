@@ -52,36 +52,18 @@ extern "C" {
 
 #define TEST_X (TEST_0)
 
-/* Task A & B Counter */
-#define		G_TASKS_CNT_MAX	3ul
-#define		G_TASKS_CNT_INI	3ul
-
 /********************** typedef **********************************************/
 
 /********************** external data declaration ****************************/
-/* Task A & B Counter */
-//extern uint32_t	g_tasks_cnt;
-
 /* Declare a variable of type QueueHandle_t. This is used to reference queues*/
 
 /* Declare a variable of type SemaphoreHandle_t (binary or counting) or mutex.
  * This is used to reference the semaphore that is used to synchronize a thread
  * with other thread or to ensure mutual exclusive access to...*/
-//extern SemaphoreHandle_t h_entry_bin_sem;
-//extern SemaphoreHandle_t h_exit1_bin_sem;
-//extern SemaphoreHandle_t h_exit2_bin_sem;
-//extern SemaphoreHandle_t h_continue_bin_sem;
-extern QueueHandle_t h_entry_q;
-extern QueueHandle_t h_exit_q;
-
-//extern SemaphoreHandle_t h_mutex_mut_sem;
-
-extern SemaphoreHandle_t h_counter_sem;
 
 /* Declare a variable of type TaskHandle_t. This is used to reference threads. */
-extern TaskHandle_t h_task_a;
-extern TaskHandle_t h_task_b;
-extern TaskHandle_t h_task_bb;
+extern TaskHandle_t h_task_entry_a;
+extern TaskHandle_t h_task_exit_a;
 extern TaskHandle_t h_task_test;
 
 /********************** external functions declaration ***********************/

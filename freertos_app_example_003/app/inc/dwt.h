@@ -29,14 +29,14 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @file   : app.h
+ * @file   : dwt.h
  * @date   : Set 26, 2023
  * @author : Juan Manuel Cruz <jcruz@fi.uba.ar> <jcruz@frba.utn.edu.ar>
  * @version	v1.0.0
  */
 
-#ifndef APP_INC_APP_H_
-#define APP_INC_APP_H_
+#ifndef DWT_INC_DWT_H_
+#define DWT_INC_DWT_H_
 
 /********************** CPP guard ********************************************/
 #ifdef __cplusplus
@@ -46,52 +46,76 @@ extern "C" {
 /********************** inclusions *******************************************/
 
 /********************** macros ***********************************************/
-#define TEST_0 (0)
-#define TEST_1 (1)
-#define TEST_2 (2)
 
-#define TEST_X (TEST_0)
+/* init cycle counter */
+/* DWT (Data Watchpoint and Trace) registers, only exists on ARM Cortex with a DWT unit */
+/*!< DEMCR: Debug Exception and Monitor Control Register */
+/*!< TRCENA: Enable trace and debug block DEMCR (Debug Exception and Monitor Control Register) */
+/*!< DWT Cycle Counter register */
+/*!< CYCCNTENA bit in DWT_CONTROL register */
+ #define cycle_counter_init() ({\
+	CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;	/* enable DWT hardware */\
+	DWT->CYCCNT = 0;								/* reset cycle counter */\
+	DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;			/* start counting */\
+ 	})
 
-/* Task A & B Counter */
-#define		G_TASKS_CNT_MAX	3ul
-#define		G_TASKS_CNT_INI	3ul
+/* reset cycle counter */
+/*!< DWT Cycle Counter register */
+#define cycle_counter_reset() (DWT->CYCCNT = 0)
+
+/* start counting */
+/*!< CYCCNTENA bit in DWT_CONTROL register */
+#define cycle_counter_enable() (DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk)
+
+/* disable counting if not used any more */
+/*!< CYCCNTENA bit in DWT_CONTROL register */
+#define cycle_counter_disable() (~DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk)
+
+/* read cycle counter */
+/*!< DWT Cycle Counter register */
+#define cycle_counter_get() (DWT->CYCCNT)
+#define cycles_per_us (SystemCoreClock / 1000000)
+#define cycle_counter_time_us() (DWT->CYCCNT / cycles_per_us)
+
+/*  uint32_t cycle_counter = 0;
+ *  uint32_t cycle_counter_time_us = 0;
+ *															// PC8 (GPIO)
+ *  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_RESET);	// => ______
+ *  cycle_counter_init();
+ *
+ *  ...
+ *  ...														// => ______
+ *																	 ___
+ *  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET); 	// => __/
+ *  // or => HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8);
+ *  cycle_counter_reset();
+ *																  ______
+ *  ...														// =>
+ *
+ *  cycle_counter = cycle_counter_get();
+ *  cycle_counter_time_us = cycle_counter_time_us();			  __
+ *  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_RESET);	// =>   \___
+ *  // or => HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8);
+ *
+ *  														// => ______
+ *
+ *  LOGGER_LOG("Cycles: %lu - Time %lu uS\r\n", cycle_counter, cycle_counter_time_us);
+ */
+
+/********************** macros ***********************************************/
 
 /********************** typedef **********************************************/
 
 /********************** external data declaration ****************************/
-/* Task A & B Counter */
-//extern uint32_t	g_tasks_cnt;
-
-/* Declare a variable of type QueueHandle_t. This is used to reference queues*/
-
-/* Declare a variable of type SemaphoreHandle_t (binary or counting) or mutex.
- * This is used to reference the semaphore that is used to synchronize a thread
- * with other thread or to ensure mutual exclusive access to...*/
-//extern SemaphoreHandle_t h_entry_bin_sem;
-//extern SemaphoreHandle_t h_exit1_bin_sem;
-//extern SemaphoreHandle_t h_exit2_bin_sem;
-//extern SemaphoreHandle_t h_continue_bin_sem;
-extern QueueHandle_t h_entry_q;
-extern QueueHandle_t h_exit_q;
-
-//extern SemaphoreHandle_t h_mutex_mut_sem;
-
-extern SemaphoreHandle_t h_counter_sem;
-
-/* Declare a variable of type TaskHandle_t. This is used to reference threads. */
-extern TaskHandle_t h_task_a;
-extern TaskHandle_t h_task_b;
-extern TaskHandle_t h_task_bb;
-extern TaskHandle_t h_task_test;
 
 /********************** external functions declaration ***********************/
-void app_init(void);
 
 /********************** End of CPP guard *************************************/
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* APP_INC_APP_H_ */
+#endif /* DWT_INC_DWT_H_ */
 
 /********************** end of file ******************************************/
+

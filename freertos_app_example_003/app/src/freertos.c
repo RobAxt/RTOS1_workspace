@@ -29,7 +29,7 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @file   : task_a.c
+ * @file   : freertos.c
  * @date   : Set 26, 2023
  * @author : Juan Manuel Cruz <jcruz@fi.uba.ar> <jcruz@frba.utn.edu.ar>
  * @version	v1.0.0
@@ -49,105 +49,55 @@
 #include "app.h"
 
 /********************** macros and definitions *******************************/
-#define G_TASK_A_CNT_INI		0ul
-
-#define TASK_A_TICK_DEL_MAX		(pdMS_TO_TICKS(2500ul))
 
 /********************** internal data declaration ****************************/
-/* Task A Flag */
-//bool task_a_flag;
 
 /********************** internal functions declaration ***********************/
 
 /********************** internal data definition *****************************/
-const char *p_task_a				= "Task A - Input Gateway";
-
-const char *p_task_a_wait_entry		= "  ==> Task    A - Wait:   Entry";
-//const char *p_task_a_wait_continue	= "  ==> Task    A - Wait:   Continue";
-const char *p_task_a_wait_counter   = "  ==> Task    A - Wait:   Counter";
-//const char *p_task_a_wait_mutex		= "  ==> Task    A - Wait:   Mutex";
-//const char *p_task_a_signal_mutex	= "  ==> Task    A - Signal: Mutex    ==>";
-
-//const char *p_task_a_g_tasks_cnt	= "  <=> Task    A - g_tasks_cnt:";
-
-const char *p_task_a_wait_2500mS	= "  ==> Task    A - Wait:   2500mS";
 
 /********************** external data declaration *****************************/
-uint32_t g_task_a_cnt;
 
 /********************** external functions definition ************************/
-/* Task A thread */
-void task_a(void *parameters)
+/* Hook Functions */
+void vApplicationIdleHook(void)
 {
-	#if (TEST_X == TEST_0)
+	/* The idle task can optionally call an application defined hook (or callback)
+	   function - the idle hook. The idle task runs at the very lowest priority,
+	   so such an idle hook function will only get executed when there are no tasks
+	   of higher priority that are able to run. This makes the idle hook function
+	   an ideal place to put the processor into a low power state - providing an
+	   automatic power saving whenever there is no processing to be performed.
+	   The idle hook will only get called if configUSE_IDLE_HOOK is set to 1
+	   https://www.freertos.org/a00016.html
+	   The idle hook is called repeatedly as long as the idle task is running. It
+	   is paramount that the idle hook function does not call any API functions
+	   that could cause it to block.*/
+	//LOGGER_LOG("  +\r\n");
+}
 
-	g_task_a_cnt = G_TASK_A_CNT_INI;
+void vApplicationTickHook(void)
+{
+	/* The tick interrupt can optionally call an application defined hook (or callback)
+	   function - the tick hook.
+	   The tick hook will only get called if configUSE_TICK_HOOK is set to 1
+	   https://www.freertos.org/a00016.html
+	   vApplicationTickHook() executes from within an ISR so must be very short, not use
+	   much stack, and not call any API functions that don't end in "FromISR" or "FROM_ISR".*/
+	//LOGGER_LOG("  -\r\n");
+}
 
-	/*  Declare & Initialize Task Function variables for argument, led, button and task */
-	char *p_task_name = (char *)pcTaskGetName(NULL);
-	char vBuffer[8] = {0};
-	/* Print out: Application Update */
-	LOGGER_LOG("  %s is running - %s\r\n", p_task_name, p_task_a);
+void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName)
+{
+	/* Run time stack overflow checking is performed if
+	   configCHECK_FOR_STACK_OVERFLOW is defined to 1 or 2. This hook function is
+	   called if a stack overflow is detected.
+	   https://www.freertos.org/Stacks-and-stack-overflow-checking.html */
+	//LOGGER_LOG(" Application Stack Overflow!! on Task: %s\r\n", ( char* )pcTaskName );
 
-    /* Init Task A & B Counter and Reset Task A Flag */
-//	g_tasks_cnt = G_TASKS_CNT_INI;
-//    task_a_flag = false;
-
-	//    xSemaphoreTake(h_entry_bin_sem, (portTickType) 0);
-	//	xSemaphoreTake(h_continue_bin_sem, (portTickType) 0);
-	
-	#endif
-
-	#if (TEST_X == TEST_1)
-
-	/* Here another code option */
-
-	#endif
-
-	#if (TEST_X == TEST_2)
-
-	/* Here Chatbot Artificial Intelligence generated code */
-
-	#endif
-
-	/* As per most tasks, this task is implemented in an infinite loop. */
-	for (;;)
-	{
-
-		#if (TEST_X == TEST_0)
-
-		/* Update Task A Counter */
-		g_task_a_cnt++;
-
-		/* Print out: Wait Entry */
-		LOGGER_LOG("  %s\r\n", p_task_a_wait_entry);
-		//xSemaphoreTake(h_entry_bin_sem, portMAX_DELAY);
-		xQueueReceive(h_entry_q, &vBuffer, portMAX_DELAY);
-		LOGGER_LOG("  New Car Arrived: %s \r\n", vBuffer);
-
-		LOGGER_LOG("  %s\r\n", p_task_a_wait_counter);
-		xSemaphoreTake(h_counter_sem, portMAX_DELAY);
-		LOGGER_LOG("Car parked and there was a free slot: %s \r\n", vBuffer);
-		/* Do it here */
-		/* Print out: Wait Continue */
-		//LOGGER_LOG("  %s\r\n", p_task_a_wait_continue);
-		//xSemaphoreTake(h_continue_bin_sem, portMAX_DELAY);
-
-
-		#endif
-
-		#if (TEST_X == TEST_1)
-
-		/* Here another code option */
-
-		#endif
-
-		#if (TEST_X == TEST_2)
-
-		/* Here Chatbot Artificial Intelligence generated code */
-
-		#endif
-	}
+    taskENTER_CRITICAL();
+    configASSERT( 0 );   /* hang the execution for debugging purposes */
+    taskEXIT_CRITICAL();
 }
 
 /********************** end of file ******************************************/

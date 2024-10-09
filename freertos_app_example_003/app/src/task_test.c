@@ -55,60 +55,66 @@
 
 /********************** internal data declaration ****************************/
 /* Events to excite tasks */
-typedef enum e_task_test {Error, Entry, Exit, Exit1, Exit2} e_task_test_t;
+typedef enum e_task_test {Error, Entry_A, Exit_A, Entry_B, Exit_B} e_task_test_t;
 
 typedef struct {
 	e_task_test_t event;
 	char domain[sizeof("AB123YZ")];
 } s_task_test_t;
+
 /********************** internal functions declaration ***********************/
 
 /********************** internal data definition *****************************/
 const char *p_task_test						= "Periodically excites other tasks";
 const char *p_task_test_priority			= "  <=> Task Test - Priority:";
-const char *p_task_test_e_task_test_array	= "  <=> Task Test - e_task_test_array:";
-
-const char *p_task_test_signal_entry		= "  <=> Task Test - Signal: Entry    <=>";
-const char *p_task_test_signal_exit			= "  <=> Task Test - Signal: Exit     <=>";
+const char *p_task_test_s_task_test_array	= "  <=> Task Test - s_task_test_array:";
 
 const char *p_task_test_signal_error  		= "  <=> Task Test - Signal: Error    <=>";
 
 const char *p_task_test_wait_5000mS			= "  <=> Task Test - Wait:   5000mS";
 
-#define E_TASK_TEST_X (4)
+#define E_TASK_TEST_X (1)
 
 #if (E_TASK_TEST_X == 0)
 /* Array of events to excite tasks */
-const e_task_test_t e_task_test_array[] = {Error, Exit_B+1, Exit_B+2};
+const s_task_test_t s_task_test_array[] = {{Error,    "AB123YZ"},
+										   {Exit_B+1, "AB123YZ"}};
 #endif
 
 #if (E_TASK_TEST_X == 1)
 /* Array of events to excite tasks */
-const e_task_test_t e_task_test_array[] = {Entry, Exit};
+const s_task_test_t s_task_test_array[] = {{Entry_A, "AB123YZ"},
+										   {Exit_A,  "AB123YZ"}};
 #endif
 
 #if (E_TASK_TEST_X == 2)
 /* Array of events to excite tasks */
-const e_task_test_t e_task_test_array[] = {Entry, Entry, Exit, Exit};
+const s_task_test_t s_task_test_array[] = {{Entry_A, "AB123YZ"},
+										   {Entry_A, "CD456WX"},
+										   {Exit_A,  "AB123YZ"},
+										   {Exit_A,  "CD456WX"}};
 #endif
 
 #if (E_TASK_TEST_X == 3)
 /* Array of events to excite tasks */
-const e_task_test_t e_task_test_array[] = {Entry, Entry, Entry, Exit, Exit, Exit};
+const s_task_test_t s_task_test_array[] = {{Entry_A, "AB123YZ"},
+										   {Entry_A, "CD456WX"},
+										   {Entry_A, "EF789UV"},
+										   {Exit_A,  "AB123YZ"},
+										   {Exit_A,  "CD456WX"},
+										   {Exit_A,  "EF789UV"}};
 #endif
 
 #if (E_TASK_TEST_X == 4)
 /* Array of events to excite tasks */
-//const e_task_test_t e_task_test_array[] = {Entry, Entry, Entry, Entry,Entry,Entry, Exit1, Exit1, Exit2, Exit2};
-const s_task_test_t s_task_test_array[] = {{Entry, "AB123YZ"},
-										   {Entry, "CD456WX"},
-										   {Exit,  "AB123YZ"},
-										   {Exit,  "CD456WX"}};
-#endif
-
-#if (E_TASK_TEST_X == 5)
-/* Array of events to excite tasks */
-const e_task_test_t e_task_test_array[] = {Entry, Entry, Entry, Entry, Entry, Exit, Exit, Exit, Exit, Exit};
+const s_task_test_t s_task_test_array[] = {{Entry_A, "AB123YZ"},
+										   {Entry_A, "CD456WX"},
+										   {Entry_A, "EF789UV"},
+										   {Entry_A, "GH012ST"},
+										   {Exit_A,  "AB123YZ"},
+										   {Exit_A,  "CD456WX"},
+										   {Exit_A,  "EF789UV"},
+										   {Exit_A,  "GH012ST"}};
 #endif
 
 /********************** external data declaration *****************************/
@@ -179,36 +185,17 @@ void task_test(void *parameters)
 			g_task_test_cnt++;
 
 			/* Print out: Event Task Test Array Index */
-			LOGGER_LOG("  %s %s %d\r\n", p_task_test_e_task_test_array, GET_NAME(index), (int)index);
+			LOGGER_LOG("  %s %s %d\r\n", p_task_test_s_task_test_array, GET_NAME(index), (int)index);
 
 			switch (s_task_test_array[index].event) {
 
-	    		case Entry:
-
-	    			/* Print out: Signal Entry */
-	    			LOGGER_LOG("  %s\r\n", p_task_test_signal_entry);
-	    			//xSemaphoreGive(h_entry_bin_sem);
-	    			xQueueSend(h_entry_q, s_task_test_array[index].domain , portMAX_DELAY);
+	    		case Entry_A:
+	    			//xQueueSend(h_entry_a_q, (void*) s_task_test_array[index].domain, portMAX_DELAY);
 
 		    		break;
-	    		case Exit:
 
-	    			LOGGER_LOG("  %s\r\n", p_task_test_signal_exit);
-	    			xQueueSend(h_exit_q, s_task_test_array[index].domain, portMAX_DELAY);
-	    			break;
-
-	    		case Exit1:
-
-	    			/* Print out: Signal Exit */
-	    			LOGGER_LOG("  %s\r\n", p_task_test_signal_exit);
-	    			//xSemaphoreGive(h_exit1_bin_sem);
-		    		break;
-
-	    		case Exit2:
-
-	    			/* Print out: Signal Exit */
-	    			LOGGER_LOG("  %s\r\n", p_task_test_signal_exit);
-	    			//xSemaphoreGive(h_exit2_bin_sem);
+	    		case Exit_A:
+	    			//xQueueSend(h_exit_a_q, (void*) s_task_test_array[index].domain, portMAX_DELAY);
 		    		break;
 
 		    	case Error:

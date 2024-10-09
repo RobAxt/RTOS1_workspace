@@ -1,0 +1,164 @@
+/* Declare a variable of type SemaphoreHandle_t (binary or counting) or mutex. 
+ * This is used to reference the semaphore that is used to synchronize a thread
+ * with other thread or to ensure mutual exclusive access to...*/
+ -------------------------------------------------------------------------------
+extern SemaphoreHandle_t h_entry_a_bin_sem;
+extern SemaphoreHandle_t h_entry_b_bin_sem;
+extern SemaphoreHandle_t h_exit_a_bin_sem;
+extern SemaphoreHandle_t h_exit_b_bin_sem;
+
+SemaphoreHandle_t h_entry_a_bin_sem;
+SemaphoreHandle_t h_entry_b_bin_sem;
+SemaphoreHandle_t h_exit_a_bin_sem;
+SemaphoreHandle_t h_exit_b_bin_sem;
+// arranca tomado
+h_entry_a_bin_sem = xSemaphoreCreateBinary();
+h_entry_b_bin_sem = xSemaphoreCreateBinary();
+h_exit_a_bin_sem  = xSemaphoreCreateBinary();
+h_exit_b_bin_sem  = xSemaphoreCreateBinary();
+
+configASSERT(h_entry_a_bin_sem != NULL);
+configASSERT(h_entry_b_bin_sem != NULL);
+configASSERT(h_exit_a_bin_sem != NULL);
+configASSERT(h_exit_b_bin_sem != NULL);
+
+vQueueAddToRegistry(h_entry_a_bin_sem, "Entry A Semaphore Handle");
+vQueueAddToRegistry(h_entry_b_bin_sem, "Entry B Semaphore Handle");
+vQueueAddToRegistry(h_exit_a_bin_sem,  "Exit A Semaphore Handle");
+vQueueAddToRegistry(h_exit_b_bin_sem,  "Exit B Semaphore Handle");
+
+xSemaphoreTake(h_entry_a_bin_sem, (TickType_t) 0);
+xSemaphoreTake(h_entry_b_bin_sem, (TickType_t) 0);
+xSemaphoreTake(h_exit_a_bin_sem, (TickType_t) 0);
+xSemaphoreTake(h_exit_b_bin_sem, (TickType_t) 0);
+
+xSemaphoreTake(h_entry_a_bin_sem, portMAX_DELAY);
+xSemaphoreTake(h_entry_b_bin_sem, portMAX_DELAY);
+xSemaphoreTake(h_exit_a_bin_sem, portMAX_DELAY);
+xSemaphoreTake(h_exit_b_bin_sem, portMAX_DELAY);
+
+xSemaphoreGive(h_entry_a_bin_sem);
+xSemaphoreGive(h_entry_b_bin_sem);
+xSemaphoreGive(h_exit_a_bin_sem);
+xSemaphoreGive(h_exit_b_bin_sem);
+
+-------------------------------------------------------------------------------
+
+extern SemaphoreHandle_t h_quantity_a_cnt_sem;
+extern SemaphoreHandle_t h_quantity_b_cnt_sem;
+
+SemaphoreHandle_t h_quantity_a_cnt_sem;
+SemaphoreHandle_t h_quantity_b_cnt_sem;
+
+h_quantity_a_cnt_sem = xSemaphoreCreateCounting((UBaseType_t)3, (UBaseType_t)3);
+                         //  ( UBaseType_t uxMaxCount, UBaseType_t uxInitialCount)
+h_quantity_b_cnt_sem = xSemaphoreCreateCounting((UBaseType_t)3, (UBaseType_t)3);
+
+configASSERT(h_quantity_a_cnt_sem != NULL);
+configASSERT(h_quantity_b_cnt_sem != NULL);
+
+vQueueAddToRegistry(h_quantity_a_cnt_sem, "Quantity A Semaphore Handle");
+vQueueAddToRegistry(h_quantity_b_cnt_sem, "Quantity B Semaphore Handle");
+
+xSemaphoreTake(h_quantity_a_cnt_sem, (TickType_t) 0);
+xSemaphoreTake(h_quantity_b_cnt_sem, (TickType_t) 0);
+
+xSemaphoreTake(h_quantity_a_cnt_sem, portMAX_DELAY);
+xSemaphoreTake(h_quantity_b_cnt_sem, portMAX_DELAY);
+
+xSemaphoreGive(h_quantity_a_cnt_sem);
+xSemaphoreGive(h_quantity_b_cnt_sem);
+
+-------------------------------------------------------------------------------
+
+extern SemaphoreHandle_t h_mutex_mut_sem;
+
+SemaphoreHandle_t h_mutex_mut_sem;
+
+h_mutex_mut_sem = xSemaphoreCreateMutex();
+
+configASSERT(h_mutex_mut_sem != NULL);
+
+vQueueAddToRegistry(h_mutex_mut_sem, "Mutex Semaphore Handle");
+
+xSemaphoreTake(h_mutex_mut_sem, (TickType_t) 0);
+
+xSemaphoreTake(h_mutex_mut_sem, portMAX_DELAY);
+
+xSemaphoreGive(h_mutex_mut_sem);
+
+-------------------------------------------------------------------------------
+
+extern QueueHandle_t h_entry_a_q;
+extern QueueHandle_t h_entry_b_q;
+extern QueueHandle_t h_exit_a_q;
+extern QueueHandle_t h_exit_b_q;
+
+QueueHandle_t h_entry_a_q;
+QueueHandle_t h_entry_b_q;
+QueueHandle_t h_exit_a_q;
+QueueHandle_t h_exit_b_q;
+
+h_entry_a_q = xQueueCreate( 2, sizeof("AB123YZ"));
+h_entry_b_q = xQueueCreate( 2, sizeof("AB123YZ"));
+h_exit_a_q = xQueueCreate( 2, sizeof("AB123YZ"));
+h_exit_b_q = xQueueCreate( 2, sizeof("AB123YZ"));
+
+configASSERT(h_entry_a_q != NULL);
+configASSERT(h_entry_b_q != NULL);
+configASSERT(h_exit_a_q != NULL);
+configASSERT(h_exit_b_q != NULL);
+
+vQueueAddToRegistry(h_entry_a_q, "Entry A Queue Handle");
+vQueueAddToRegistry(h_entry_b_q, "Entry B Queue Handle");
+vQueueAddToRegistry(h_exit_a_q, "Exit A Queue Handle");
+vQueueAddToRegistry(h_exit_b_q, "Exit B Queue Handle");
+
+xQueueSend(h_entry_a_q, &vItemToQueue, (TickType_t) 0);
+xQueueSend(h_entry_b_q, &vItemToQueue, (TickType_t) 0);
+xQueueSend(h_exit_a_q, &vItemToQueue, (TickType_t) 0);
+xQueueSend(h_exit_b_q, &vItemToQueue, (TickType_t) 0);
+
+xQueueSend(h_entry_a_q, &vItemToQueue, portMAX_DELAY);
+xQueueSend(h_entry_b_q, &vItemToQueue, portMAX_DELAY);
+xQueueSend(h_exit_a_q, &vItemToQueue, portMAX_DELAY);
+xQueueSend(h_exit_b_q, &vItemToQueue, portMAX_DELAY);
+
+xQueueReceive(h_entry_a_q, &vBuffer, (TickType_t) 0);
+xQueueReceive(h_entry_b_q, &vBuffer, (TickType_t) 0);
+xQueueReceive(h_exit_a_q, &vBuffer, (TickType_t) 0);
+xQueueReceive(h_exit_b_q, &vBuffer, (TickType_t) 0);
+
+xQueueReceive(h_entry_a_q, &vBuffer, portMAX_DELAY);
+xQueueReceive(h_entry_b_q, &vBuffer, portMAX_DELAY);
+xQueueReceive(h_exit_a_q, &vBuffer, portMAX_DELAY);
+xQueueReceive(h_exit_b_q, &vBuffer, portMAX_DELAY);
+
+uxQueueMessagesWaiting(h_entry_a_q) != 0
+uxQueueMessagesWaiting(h_entry_b_q) != 0
+uxQueueMessagesWaiting(h_exit_a_q) != 0
+uxQueueMessagesWaiting(h_exit_b_q) != 0
+
+-------------------------------------------------------------------------------
+
+extern QueueHandle_t h_struct_q;
+
+QueueHandle_t h_struct_q;
+
+h_struct_q = xQueueCreate( 2, sizeof(struct_t));
+
+configASSERT(h_struct_q != NULL);
+
+vQueueAddToRegistry(h_struct_q, "Struct Queue Handle");
+
+xQueueSend(h_struct_q, &vItemToQueue, (TickType_t) 0);
+
+xQueueSend(h_struct_q, &vItemToQueue, portMAX_DELAY);
+
+xQueueReceive(h_struct_q, &vBuffer, (TickType_t) 0);
+
+xQueueReceive(h_struct_q, &vBuffer, portMAX_DELAY);
+
+uxQueueMessagesWaiting(h_struct_q) != 0
+
+-------------------------------------------------------------------------------

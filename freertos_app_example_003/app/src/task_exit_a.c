@@ -29,7 +29,7 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @file   : task_a.c
+ * @file   : task_exit_a.c
  * @date   : Set 26, 2023
  * @author : Juan Manuel Cruz <jcruz@fi.uba.ar> <jcruz@frba.utn.edu.ar>
  * @version	v1.0.0
@@ -49,53 +49,36 @@
 #include "app.h"
 
 /********************** macros and definitions *******************************/
-#define G_TASK_A_CNT_INI		0ul
+#define G_TASK_B_CNT_INI		0ul
 
-#define TASK_A_TICK_DEL_MAX		(pdMS_TO_TICKS(2500ul))
+#define TASK_B_TICK_DEL_MAX		(pdMS_TO_TICKS(2500ul))
 
 /********************** internal data declaration ****************************/
-/* Task A Flag */
-//bool task_a_flag;
 
 /********************** internal functions declaration ***********************/
 
 /********************** internal data definition *****************************/
-const char *p_task_a				= "Task A - Input Gateway";
+const char *p_task_exit_a 				= "Task Exit A - Output Gateway";
 
-const char *p_task_a_wait_entry		= "  ==> Task    A - Wait:   Entry";
-//const char *p_task_a_wait_continue	= "  ==> Task    A - Wait:   Continue";
-const char *p_task_a_wait_counter   = "  ==> Task    A - Wait:   Counter";
-//const char *p_task_a_wait_mutex		= "  ==> Task    A - Wait:   Mutex";
-//const char *p_task_a_signal_mutex	= "  ==> Task    A - Signal: Mutex    ==>";
-
-//const char *p_task_a_g_tasks_cnt	= "  <=> Task    A - g_tasks_cnt:";
-
-const char *p_task_a_wait_2500mS	= "  ==> Task    A - Wait:   2500mS";
+const char *p_task_exit_a_wait_2500mS	= "  ==> Task  Exit A - Wait:   2500mS";
 
 /********************** external data declaration *****************************/
-uint32_t g_task_a_cnt;
+uint32_t g_task_exit_a_cnt;
 
 /********************** external functions definition ************************/
-/* Task A thread */
-void task_a(void *parameters)
+/* Task B thread */
+void task_exit_a(void *parameters)
 {
 	#if (TEST_X == TEST_0)
 
-	g_task_a_cnt = G_TASK_A_CNT_INI;
+	g_task_exit_a_cnt = G_TASK_B_CNT_INI;
 
 	/*  Declare & Initialize Task Function variables for argument, led, button and task */
 	char *p_task_name = (char *)pcTaskGetName(NULL);
-	char vBuffer[8] = {0};
+
 	/* Print out: Application Update */
-	LOGGER_LOG("  %s is running - %s\r\n", p_task_name, p_task_a);
+	LOGGER_LOG("  %s is running - %s\r\n", p_task_name, p_task_exit_a);
 
-    /* Init Task A & B Counter and Reset Task A Flag */
-//	g_tasks_cnt = G_TASKS_CNT_INI;
-//    task_a_flag = false;
-
-	//    xSemaphoreTake(h_entry_bin_sem, (portTickType) 0);
-	//	xSemaphoreTake(h_continue_bin_sem, (portTickType) 0);
-	
 	#endif
 
 	#if (TEST_X == TEST_1)
@@ -116,23 +99,15 @@ void task_a(void *parameters)
 
 		#if (TEST_X == TEST_0)
 
-		/* Update Task A Counter */
-		g_task_a_cnt++;
+		/* Update Task B Counter */
+		g_task_exit_a_cnt++;
 
-		/* Print out: Wait Entry */
-		LOGGER_LOG("  %s\r\n", p_task_a_wait_entry);
-		//xSemaphoreTake(h_entry_bin_sem, portMAX_DELAY);
-		xQueueReceive(h_entry_q, &vBuffer, portMAX_DELAY);
-		LOGGER_LOG("  New Car Arrived: %s \r\n", vBuffer);
+		/* Print out: Wait 2500mS */
+//		LOGGER_LOG("  %s - %s %d\r\n", p_task_exit_a_wait_2500mS, GET_NAME(g_task_exit_a_cnt), (int)g_task_exit_a_cnt);
+		LOGGER_LOG("  %s\r\n", p_task_exit_a_wait_2500mS);
 
-		LOGGER_LOG("  %s\r\n", p_task_a_wait_counter);
-		xSemaphoreTake(h_counter_sem, portMAX_DELAY);
-		LOGGER_LOG("Car parked and there was a free slot: %s \r\n", vBuffer);
-		/* Do it here */
-		/* Print out: Wait Continue */
-		//LOGGER_LOG("  %s\r\n", p_task_a_wait_continue);
-		//xSemaphoreTake(h_continue_bin_sem, portMAX_DELAY);
-
+		/* We want this task to execute every 2500 milliseconds. */
+		vTaskDelay(TASK_B_TICK_DEL_MAX);
 
 		#endif
 

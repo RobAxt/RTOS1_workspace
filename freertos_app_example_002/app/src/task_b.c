@@ -55,7 +55,7 @@
 
 /********************** internal data declaration ****************************/
 /* Task B Flag */
-bool task_b_flag;
+//bool task_b_flag;
 
 /********************** internal functions declaration ***********************/
 
@@ -90,10 +90,10 @@ void task_b(void *parameters)
 	LOGGER_LOG("  %s is running - %s\r\n", p_task_name, p_task_b);
 
     /* Reset Task B Flag */
-    task_b_flag = false;
-    SemaphoreHandle_t h_exit_bin_sem = (SemaphoreHandle_t) parameters;
-    xSemaphoreTake(h_exit_bin_sem, (portTickType) 0);
-
+    //task_b_flag = false;
+ //   SemaphoreHandle_t h_exit_bin_sem = (SemaphoreHandle_t) parameters;
+  //  xSemaphoreTake(h_exit_bin_sem, (portTickType) 0);
+	char vBuffer[8] = {0};
 	#endif
 
 	#if (TEST_X == TEST_1)
@@ -119,41 +119,11 @@ void task_b(void *parameters)
 
 		/* Print out: Wait Exit */
 		LOGGER_LOG("  %s\r\n", p_task_b_wait_exit);
-		xSemaphoreTake(h_exit_bin_sem, portMAX_DELAY);
+		//xSemaphoreTake(h_exit_bin_sem, portMAX_DELAY);
+		xQueueReceive(h_exit_q, &vBuffer, portMAX_DELAY);
 
-		/* Print out: Wait Mutex */
-		//LOGGER_LOG("  %s\r\n", p_task_b_wait_mutex);
-		//xSemaphoreTake(h_mutex_mut_sem, portMAX_DELAY);
-		/* Update Task A & B Counter */
-		//g_tasks_cnt--;
-
-		/* Print out: Task A & B Counter*/
-		//LOGGER_LOG("  %s %d\r\n", p_task_b_g_tasks_cnt, (int)g_tasks_cnt);
-
-		/* Check Task A & B Counter and Set Task B Flag */
-		//if ((G_TASKS_CNT_MAX - 1) == g_tasks_cnt)
-		//{
-		/* Set Task B Flag */
-		//	task_b_flag = true;
-		//}
-
-		/* Print out: Signal Mutex */
-		//LOGGER_LOG("  %s\r\n", p_task_b_signal_mutex);
-		//xSemaphoreGive(h_mutex_mut_sem);
-
-		/* Check Task B Flag, Reset Task B Flag and Do it here */
-		//if (true == task_b_flag)
-		//{
-			/* Reset Task B Flag */
-		//	task_b_flag = false;
-
-		LOGGER_LOG("  %s\r\n", p_task_b_wait_counter);
+		LOGGER_LOG("  %s: Domain: %s\r\n", p_task_b_wait_counter, vBuffer);
 		xSemaphoreGive(h_counter_sem);
-
-		/* Do it here */
-		/* Print out: Signal Continue */
-		//LOGGER_LOG("  %s\r\n", p_task_b_signal_continue);
-		//xSemaphoreGive(h_continue_bin_sem);
 
 		#endif
 

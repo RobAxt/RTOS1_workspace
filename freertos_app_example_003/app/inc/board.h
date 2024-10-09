@@ -29,14 +29,14 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @file   : app.h
+ * @file   : board.h
  * @date   : Set 26, 2023
  * @author : Juan Manuel Cruz <jcruz@fi.uba.ar> <jcruz@frba.utn.edu.ar>
  * @version	v1.0.0
  */
 
-#ifndef APP_INC_APP_H_
-#define APP_INC_APP_H_
+#ifndef BOARD_INC_BOARD_H_
+#define BOARD_INC_BOARD_H_
 
 /********************** CPP guard ********************************************/
 #ifdef __cplusplus
@@ -46,52 +46,101 @@ extern "C" {
 /********************** inclusions *******************************************/
 
 /********************** macros ***********************************************/
-#define TEST_0 (0)
-#define TEST_1 (1)
-#define TEST_2 (2)
+#define NUCLEO_F103RC		(0)
+#define NUCLEO_F401RE		(1)
+#define NUCLEO_F446RE		(2)
+#define NUCLEO_F429ZI		(3)
+#define NUCLEO_F439ZI		(4)
+#define NUCLEO_F413ZH		(5)
+#define STM32F429I_DISCO1	(6)
 
-#define TEST_X (TEST_0)
+#define BOARD (NUCLEO_F429ZI)
 
-/* Task A & B Counter */
-#define		G_TASKS_CNT_MAX	3ul
-#define		G_TASKS_CNT_INI	3ul
+/* STM32 Nucleo Boards - 64 Pins */
+#if ((BOARD == NUCLEO_F103RC) || (BOARD == NUCLEO_F401RE) || (BOARD == NUCLEO_F446RE))
+
+#define BTN_A_PIN	B1_Pin
+#define BTN_A_PORT	B1_GPIO_Port
+#define BTN_B_PIN	B1_Pin
+#define BTN_B_PORT	B1_GPIO_Port
+#define BTN_C_PIN	B1_Pin
+#define BTN_C_PORT	B1_GPIO_Port
+
+#define BTN_PRESSED	GPIO_PIN_RESET
+#define BTN_HOVER	GPIO_PIN_SET
+
+#define LED_A_PIN	LD2_Pin
+#define LED_A_PORT	LD2_GPIO_Port
+#define LED_B_PIN	LD2_Pin
+#define LED_B_PORT	LD2_GPIO_Port
+#define LED_C_PIN	LD2_Pin
+#define LED_C_PORT	LD2_GPIO_Port
+
+#define LED_ON		GPIO_PIN_SET
+#define LED_OFF		GPIO_PIN_RESET
+
+#endif/* STM32 Nucleo Boards - 144 Pins */
+
+#if ((BOARD == NUCLEO_F429ZI) || (BOARD == NUCLEO_F439ZI) || (BOARD == NUCLEO_F413ZH))
+
+#define BTN_A_PIN	USER_Btn_Pin
+#define BTN_A_PORT	USER_Btn_GPIO_Port
+#define BTN_B_PIN	USER_Btn_Pin
+#define BTN_B_PORT	USER_Btn_GPIO_Port
+#define BTN_C_PIN	USER_Btn_Pin
+#define BTN_C_PORT	USER_Btn_GPIO_Port
+
+#define BTN_PRESSED	GPIO_PIN_SET
+#define BTN_HOVER	GPIO_PIN_RESET
+
+#define LED_A_PIN	LD1_Pin
+#define LED_A_PORT	LD1_GPIO_Port
+#define LED_B_PIN	LD2_Pin
+#define LED_B_PORT	LD2_GPIO_Port
+#define LED_C_PIN	LD3_Pin
+#define LED_C_PORT	LD3_GPIO_Port
+
+#define LED_ON		GPIO_PIN_SET
+#define LED_OFF		GPIO_PIN_RESET
+
+#endif
+
+/* STM32 Discovery Kits */
+#if (BOARD == STM32F429I_DISCO1)
+
+#define BTN_A_PIN	B1_Pin
+#define BTN_A_PORT	B1_GPIO_Port
+#define BTN_B_PIN	B2_Pin
+#define BTN_B_PORT	B2_GPIO_Port
+#define BTN_C_PIN	B3_Pin
+#define BTN_C_PORT	B3_GPIO_Port
+
+#define BTN_PRESSED	GPIO_PIN_SET
+#define BTN_HOVER	GPIO_PIN_RESET
+
+#define LED_A_PIN	LD3_Pin
+#define LED_A_PORT	LD3_GPIO_Port
+#define LED_B_PIN	LD4_Pin
+#define LED_B_PORT	LD4_GPIO_Port
+#define LED_C_PIN	LD4_Pin
+#define LED_C_PORT	LD4_GPIO_Port
+
+#define LED_ON		GPIO_PIN_SET
+#define LED_OFF		GPIO_PIN_RESET
+
+#endif
 
 /********************** typedef **********************************************/
 
 /********************** external data declaration ****************************/
-/* Task A & B Counter */
-//extern uint32_t	g_tasks_cnt;
-
-/* Declare a variable of type QueueHandle_t. This is used to reference queues*/
-
-/* Declare a variable of type SemaphoreHandle_t (binary or counting) or mutex.
- * This is used to reference the semaphore that is used to synchronize a thread
- * with other thread or to ensure mutual exclusive access to...*/
-//extern SemaphoreHandle_t h_entry_bin_sem;
-//extern SemaphoreHandle_t h_exit1_bin_sem;
-//extern SemaphoreHandle_t h_exit2_bin_sem;
-//extern SemaphoreHandle_t h_continue_bin_sem;
-extern QueueHandle_t h_entry_q;
-extern QueueHandle_t h_exit_q;
-
-//extern SemaphoreHandle_t h_mutex_mut_sem;
-
-extern SemaphoreHandle_t h_counter_sem;
-
-/* Declare a variable of type TaskHandle_t. This is used to reference threads. */
-extern TaskHandle_t h_task_a;
-extern TaskHandle_t h_task_b;
-extern TaskHandle_t h_task_bb;
-extern TaskHandle_t h_task_test;
 
 /********************** external functions declaration ***********************/
-void app_init(void);
 
 /********************** End of CPP guard *************************************/
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* APP_INC_APP_H_ */
+#endif /* BOARD_INC_BOARD_H_ */
 
 /********************** end of file ******************************************/
