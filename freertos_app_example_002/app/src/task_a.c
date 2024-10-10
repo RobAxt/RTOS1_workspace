@@ -84,6 +84,7 @@ void task_a(void *parameters)
 	g_task_a_cnt = G_TASK_A_CNT_INI;
 
 	/*  Declare & Initialize Task Function variables for argument, led, button and task */
+	task_config_t* task_config = (task_config_t*) parameters;
 	char *p_task_name = (char *)pcTaskGetName(NULL);
 	char vBuffer[8] = {0};
 	/* Print out: Application Update */
@@ -122,11 +123,11 @@ void task_a(void *parameters)
 		/* Print out: Wait Entry */
 		LOGGER_LOG("  %s\r\n", p_task_a_wait_entry);
 		//xSemaphoreTake(h_entry_bin_sem, portMAX_DELAY);
-		xQueueReceive(h_entry_q, &vBuffer, portMAX_DELAY);
+		xQueueReceive(task_config->h_q, &vBuffer, portMAX_DELAY);
 		LOGGER_LOG("  New Car Arrived: %s \r\n", vBuffer);
 
 		LOGGER_LOG("  %s\r\n", p_task_a_wait_counter);
-		xSemaphoreTake(h_counter_sem, portMAX_DELAY);
+		xSemaphoreTake(task_config->h_counter_sem, portMAX_DELAY);
 		LOGGER_LOG("Car parked and there was a free slot: %s \r\n", vBuffer);
 		/* Do it here */
 		/* Print out: Wait Continue */

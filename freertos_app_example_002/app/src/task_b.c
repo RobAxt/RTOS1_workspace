@@ -85,7 +85,7 @@ void task_b(void *parameters)
 
 	/*  Declare & Initialize Task Function variables for argument, led, button and task */
 	char *p_task_name = (char *)pcTaskGetName(NULL);
-
+	task_config_t* task_config = (task_config_t*) parameters;
 	/* Print out: Application Update */
 	LOGGER_LOG("  %s is running - %s\r\n", p_task_name, p_task_b);
 
@@ -120,10 +120,10 @@ void task_b(void *parameters)
 		/* Print out: Wait Exit */
 		LOGGER_LOG("  %s\r\n", p_task_b_wait_exit);
 		//xSemaphoreTake(h_exit_bin_sem, portMAX_DELAY);
-		xQueueReceive(h_exit_q, &vBuffer, portMAX_DELAY);
+		xQueueReceive(task_config->h_q, &vBuffer, portMAX_DELAY);
 
 		LOGGER_LOG("  %s: Domain: %s\r\n", p_task_b_wait_counter, vBuffer);
-		xSemaphoreGive(h_counter_sem);
+		xSemaphoreGive(task_config->h_counter_sem);
 
 		#endif
 

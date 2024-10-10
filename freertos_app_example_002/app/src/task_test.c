@@ -55,7 +55,7 @@
 
 /********************** internal data declaration ****************************/
 /* Events to excite tasks */
-typedef enum e_task_test {Error, Entry, Exit, Exit1, Exit2} e_task_test_t;
+typedef enum e_task_test {Error, Entry, Entry1, Entry2, Exit, Exit1, Exit2} e_task_test_t;
 
 typedef struct {
 	e_task_test_t event;
@@ -100,10 +100,10 @@ const e_task_test_t e_task_test_array[] = {Entry, Entry, Entry, Exit, Exit, Exit
 #if (E_TASK_TEST_X == 4)
 /* Array of events to excite tasks */
 //const e_task_test_t e_task_test_array[] = {Entry, Entry, Entry, Entry,Entry,Entry, Exit1, Exit1, Exit2, Exit2};
-const s_task_test_t s_task_test_array[] = {{Entry, "AB123YZ"},
-										   {Entry, "CD456WX"},
-										   {Exit,  "AB123YZ"},
-										   {Exit,  "CD456WX"}};
+const s_task_test_t s_task_test_array[] = {{Entry1, "AB123YZ"},
+										   {Entry2, "CD456WX"},
+										   {Exit1,  "AB123YZ"},
+										   {Exit2,  "CD456WX"}};
 #endif
 
 #if (E_TASK_TEST_X == 5)
@@ -184,31 +184,38 @@ void task_test(void *parameters)
 			switch (s_task_test_array[index].event) {
 
 	    		case Entry:
-
 	    			/* Print out: Signal Entry */
 	    			LOGGER_LOG("  %s\r\n", p_task_test_signal_entry);
 	    			//xSemaphoreGive(h_entry_bin_sem);
-	    			xQueueSend(h_entry_q, s_task_test_array[index].domain , portMAX_DELAY);
+	    			//xQueueSend(h_entry_q, s_task_test_array[index].domain , portMAX_DELAY);
 
 		    		break;
 	    		case Exit:
-
 	    			LOGGER_LOG("  %s\r\n", p_task_test_signal_exit);
-	    			xQueueSend(h_exit_q, s_task_test_array[index].domain, portMAX_DELAY);
+	    			//xQueueSend(h_exit_q, s_task_test_array[index].domain, portMAX_DELAY);
 	    			break;
 
+	    		case Entry1:
+	    			/* Print out: Signal Exit */
+	    			LOGGER_LOG("  %s\r\n", p_task_test_signal_entry);
+	    			xQueueSend(h_entry1_q, s_task_test_array[index].domain , portMAX_DELAY);
+	    			break;
+	    		case Entry2:
+	    			/* Print out: Signal Exit */
+	    			LOGGER_LOG("  %s\r\n", p_task_test_signal_entry);
+	    			xQueueSend(h_entry2_q, s_task_test_array[index].domain , portMAX_DELAY);
+	    			break;
 	    		case Exit1:
 
 	    			/* Print out: Signal Exit */
 	    			LOGGER_LOG("  %s\r\n", p_task_test_signal_exit);
-	    			//xSemaphoreGive(h_exit1_bin_sem);
+	    			xQueueSend(h_exit1_q, s_task_test_array[index].domain , portMAX_DELAY);
 		    		break;
 
 	    		case Exit2:
-
 	    			/* Print out: Signal Exit */
 	    			LOGGER_LOG("  %s\r\n", p_task_test_signal_exit);
-	    			//xSemaphoreGive(h_exit2_bin_sem);
+	    			xQueueSend(h_exit2_q, s_task_test_array[index].domain , portMAX_DELAY);
 		    		break;
 
 		    	case Error:
