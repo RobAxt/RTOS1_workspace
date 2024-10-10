@@ -153,7 +153,7 @@ void app_init(void)
     task_config[0].h_counter_sem = h_counter1_sem;
     /* Task A thread at priority 2 */
     ret = xTaskCreate(task_a,							/* Pointer to the function thats implement the task. */
-					  "Task A",							/* Text name for the task. This is to facilitate debugging only. */
+					  "Task A Entry 1",							/* Text name for the task. This is to facilitate debugging only. */
 					  (2 * configMINIMAL_STACK_SIZE),	/* Stack depth in words. */
 					  (void*) &task_config[0],								/* We are not using the task parameter. */
 					  (tskIDLE_PRIORITY + 2ul),			/* This task will run at priority 1. */
@@ -166,7 +166,7 @@ void app_init(void)
     task_config[1].h_counter_sem = h_counter2_sem;
     /* Task A thread at priority 2 */
     ret = xTaskCreate(task_a,							/* Pointer to the function thats implement the task. */
-					  "Task A",							/* Text name for the task. This is to facilitate debugging only. */
+					  "Task AA Entry 2",							/* Text name for the task. This is to facilitate debugging only. */
 					  (2 * configMINIMAL_STACK_SIZE),	/* Stack depth in words. */
 					  (void*) &task_config[1],								/* We are not using the task parameter. */
 					  (tskIDLE_PRIORITY + 2ul),			/* This task will run at priority 1. */
@@ -179,7 +179,7 @@ void app_init(void)
     task_config[2].h_counter_sem = h_counter1_sem;
     /* Task B thread at priority 2 */
     ret = xTaskCreate(task_b,						/* Pointer to the function thats implement the task. */
-					  "Task B",						/* Text name for the task. This is to facilitate debugging only. */
+					  "Task B Exit 1",						/* Text name for the task. This is to facilitate debugging only. */
 					  (2 * configMINIMAL_STACK_SIZE),	/* Stack depth in words. */
 					  (void*) &task_config[2],					/* We are using the task parameter. */
 					  (tskIDLE_PRIORITY + 2ul),			/* This task will run at priority 1. */
@@ -192,7 +192,7 @@ void app_init(void)
     task_config[3].h_counter_sem = h_counter2_sem;
     /* Task B thread at priority 2 */
     ret = xTaskCreate(task_b,						/* Pointer to the function thats implement the task. */
-    				  "Task BB",						/* Text name for the task. This is to facilitate debugging only. */
+    				  "Task BB Exit 2",						/* Text name for the task. This is to facilitate debugging only. */
     				  (2 * configMINIMAL_STACK_SIZE),	/* Stack depth in words. */
 					  (void*) &task_config[3],					/* We are using the task parameter. */
     				  (tskIDLE_PRIORITY + 2ul),			/* This task will run at priority 1. */

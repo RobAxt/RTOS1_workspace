@@ -197,24 +197,24 @@ void task_test(void *parameters)
 
 	    		case Entry1:
 	    			/* Print out: Signal Exit */
-	    			LOGGER_LOG("  %s\r\n", p_task_test_signal_entry);
+	    			LOGGER_LOG("  %s1\r\n", p_task_test_signal_entry);
 	    			xQueueSend(h_entry1_q, s_task_test_array[index].domain , portMAX_DELAY);
 	    			break;
 	    		case Entry2:
 	    			/* Print out: Signal Exit */
-	    			LOGGER_LOG("  %s\r\n", p_task_test_signal_entry);
+	    			LOGGER_LOG("  %s2\r\n", p_task_test_signal_entry);
 	    			xQueueSend(h_entry2_q, s_task_test_array[index].domain , portMAX_DELAY);
 	    			break;
 	    		case Exit1:
 
 	    			/* Print out: Signal Exit */
-	    			LOGGER_LOG("  %s\r\n", p_task_test_signal_exit);
+	    			LOGGER_LOG("  %s1\r\n", p_task_test_signal_exit);
 	    			xQueueSend(h_exit1_q, s_task_test_array[index].domain , portMAX_DELAY);
 		    		break;
 
 	    		case Exit2:
 	    			/* Print out: Signal Exit */
-	    			LOGGER_LOG("  %s\r\n", p_task_test_signal_exit);
+	    			LOGGER_LOG("  %s2\r\n", p_task_test_signal_exit);
 	    			xQueueSend(h_exit2_q, s_task_test_array[index].domain , portMAX_DELAY);
 		    		break;
 
