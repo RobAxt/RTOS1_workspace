@@ -101,7 +101,14 @@ void task_exit_a(void *parameters)
 
 		/* Update Task B Counter */
 		g_task_exit_a_cnt++;
+		xSemaphoreTake(h_exit_a_bin_sem, portMAX_DELAY);
 
+		xSemaphoreTake(h_mutex_mut_sem, portMAX_DELAY);
+
+		xSemaphoreGive(h_quantity_a_cnt_sem);
+		semaphore_vial_control(GREEN, xTaskGetCurrentTaskHandle());
+
+		xSemaphoreGive(h_mutex_mut_sem);
 		/* Print out: Wait 2500mS */
 //		LOGGER_LOG("  %s - %s %d\r\n", p_task_exit_a_wait_2500mS, GET_NAME(g_task_exit_a_cnt), (int)g_task_exit_a_cnt);
 		LOGGER_LOG("  %s\r\n", p_task_exit_a_wait_2500mS);

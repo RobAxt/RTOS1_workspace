@@ -52,23 +52,34 @@ extern "C" {
 
 #define TEST_X (TEST_0)
 
+#define RED  pdFALSE
+#define GREEN  pdTRUE
+
 /********************** typedef **********************************************/
 
 /********************** external data declaration ****************************/
 /* Declare a variable of type QueueHandle_t. This is used to reference queues*/
+extern QueueHandle_t h_entry_a_q;
+extern QueueHandle_t h_entry_b_q;
+extern QueueHandle_t h_struct_q;
 
 /* Declare a variable of type SemaphoreHandle_t (binary or counting) or mutex.
  * This is used to reference the semaphore that is used to synchronize a thread
  * with other thread or to ensure mutual exclusive access to...*/
-
+extern SemaphoreHandle_t h_exit_a_bin_sem;
+extern SemaphoreHandle_t h_exit_b_bin_sem;
+extern SemaphoreHandle_t h_quantity_a_cnt_sem;
+extern SemaphoreHandle_t h_mutex_mut_sem;
 /* Declare a variable of type TaskHandle_t. This is used to reference threads. */
 extern TaskHandle_t h_task_entry_a;
 extern TaskHandle_t h_task_exit_a;
+extern TaskHandle_t h_task_entry_b;
+extern TaskHandle_t h_task_exit_b;
 extern TaskHandle_t h_task_test;
-
+extern TaskHandle_t h_monitor;
 /********************** external functions declaration ***********************/
 void app_init(void);
-
+void semaphore_vial_control(bool color, TaskHandle_t task_id);
 /********************** End of CPP guard *************************************/
 #ifdef __cplusplus
 }

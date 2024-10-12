@@ -59,22 +59,22 @@
 /********************** internal functions declaration ***********************/
 
 /********************** internal data definition *****************************/
-const char *p_task_entry_a				= "Task Entry A - Input Gateway";
+const char *p_task_entry_b				= "Task Entry B - Input Gateway";
 
-const char *p_task_entry_a_wait_2500mS	= "  ==> Task Entry A - Wait:   2500mS";
-const char *DATETIME = "20241010112500";
-const uint8_t DATETIME_SIZE = 15;
+const char *p_task_entry_b_wait_2500mS	= "  ==> Task Entry B - Wait:   2500mS";
+const char *DATETIME_B = "20241010112500";
+const uint8_t DATETIME_SIZE_B = 15;
 
 /********************** external data declaration *****************************/
-uint32_t g_task_entry_a_cnt;
+uint32_t g_task_entry_b_cnt;
 
 /********************** external functions definition ************************/
 /* Task A thread */
-void task_entry_a(void *parameters)
+void task_entry_b(void *parameters)
 {
 	#if (TEST_X == TEST_0)
 
-	g_task_entry_a_cnt = G_TASK_A_CNT_INI;
+	g_task_entry_b_cnt = G_TASK_A_CNT_INI;
 
 	/*  Declare & Initialize Task Function variables for argument, led, button and task */
 	char *p_task_name = (char *)pcTaskGetName(NULL);
@@ -82,7 +82,7 @@ void task_entry_a(void *parameters)
 	struct_q item;
 
 	/* Print out: Application Update */
-	LOGGER_LOG("  %s is running - %s\r\n", p_task_name, p_task_entry_a);
+	LOGGER_LOG("  %s is running - %s\r\n", p_task_name, p_task_entry_b);
 	semaphore_vial_control(GREEN, xTaskGetCurrentTaskHandle());
 	#endif
 
@@ -105,12 +105,12 @@ void task_entry_a(void *parameters)
 		#if (TEST_X == TEST_0)
 
 		/* Update Task A Counter */
-		g_task_entry_a_cnt++;
-		xQueueReceive(h_entry_a_q, (void*)domain, portMAX_DELAY);
+		g_task_entry_b_cnt++;
+		xQueueReceive(h_entry_b_q, (void*)domain, portMAX_DELAY);
 
 		memcpy(item.domain, domain, sizeof("AB123YZ"));
 		item.task_Id = p_task_name;
-		memcpy(item.dateTime, DATETIME, DATETIME_SIZE);
+		memcpy(item.dateTime, DATETIME_B, DATETIME_SIZE_B);
 
 		xSemaphoreTake(h_mutex_mut_sem, portMAX_DELAY);
 
@@ -122,8 +122,8 @@ void task_entry_a(void *parameters)
 		xSemaphoreGive(h_mutex_mut_sem);
 
 		/* Print out: Wait 2500mS */
-//		LOGGER_LOG("  %s - %s %d\r\n", p_task_entry_a_wait_2500mS, GET_NAME(g_task_entry_a_cnt), (int)g_task_entry_a_cnt);
-		LOGGER_LOG("  %s\r\n", p_task_entry_a_wait_2500mS);
+//		LOGGER_LOG("  %s - %s %d\r\n", p_task_entry_b_wait_2500mS, GET_NAME(g_task_entry_b_cnt), (int)g_task_entry_b_cnt);
+		LOGGER_LOG("  %s\r\n", p_task_entry_b_wait_2500mS);
 
 		/* We want this task to execute every 2500 milliseconds. */
 		vTaskDelay(TASK_A_TICK_DEL_MAX);

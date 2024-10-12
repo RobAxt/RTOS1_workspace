@@ -84,7 +84,9 @@ const s_task_test_t s_task_test_array[] = {{Error,    "AB123YZ"},
 #if (E_TASK_TEST_X == 1)
 /* Array of events to excite tasks */
 const s_task_test_t s_task_test_array[] = {{Entry_A, "AB123YZ"},
-										   {Exit_A,  "AB123YZ"}};
+										   {Exit_A,  "AB123YZ"},
+										   {Entry_B, "AZ223YA"},
+										   {Exit_B,  "AZ223YA"}};
 #endif
 
 #if (E_TASK_TEST_X == 2)
@@ -190,14 +192,19 @@ void task_test(void *parameters)
 			switch (s_task_test_array[index].event) {
 
 	    		case Entry_A:
-	    			//xQueueSend(h_entry_a_q, (void*) s_task_test_array[index].domain, portMAX_DELAY);
-
+	    			xQueueSend(h_entry_a_q, (void*) s_task_test_array[index].domain, portMAX_DELAY);
 		    		break;
 
 	    		case Exit_A:
-	    			//xQueueSend(h_exit_a_q, (void*) s_task_test_array[index].domain, portMAX_DELAY);
+	    			xSemaphoreGive(h_exit_a_bin_sem);
+		    		break;
+	    		case Entry_B:
+	    			xQueueSend(h_entry_b_q, (void*) s_task_test_array[index].domain, portMAX_DELAY);
 		    		break;
 
+	    		case Exit_B:
+	    			xSemaphoreGive(h_exit_b_bin_sem);
+		    		break;
 		    	case Error:
 		    	default:
 
